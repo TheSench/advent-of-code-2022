@@ -17,3 +17,11 @@ tasks {
         gradleVersion = "7.6"
     }
 }
+
+dependencies {
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+  useJUnitPlatform()
+}
