@@ -9,11 +9,20 @@ repositories {
 tasks {
     sourceSets {
         main {
-            java.srcDirs("src")
+            resources.setSrcDirs(listOf("src/main/resources"))
         }
     }
 
     wrapper {
         gradleVersion = "7.6"
     }
+}
+
+dependencies {
+    testImplementation(kotlin("test"))
+    implementation("io.kotest:kotest-assertions-core-jvm:5.5.4")
+}
+
+tasks.test {
+  useJUnitPlatform()
 }
