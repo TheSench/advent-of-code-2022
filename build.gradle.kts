@@ -20,6 +20,7 @@ tasks {
 
 dependencies {
     testImplementation(kotlin("test"))
+    implementation("io.kotest:kotest-assertions-core-jvm:5.5.4")
 }
 
 tasks.test {
