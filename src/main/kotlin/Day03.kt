@@ -36,7 +36,7 @@ private fun String.toRucksack() =
         }
     }
 
-val Char.priority: Int
+private val Char.priority: Int
     get() = when (this) {
         in 'a'..'z' -> code - ('a'.code) + 1
         in 'A'..'Z' -> code - ('A'.code) + 27

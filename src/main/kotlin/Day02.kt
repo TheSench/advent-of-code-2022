@@ -1,4 +1,4 @@
-fun main() {
+private fun main() {
   fun part1(input: List<String>): Int {
     return input.mapToCombinations().toScores().also(::println).sum()
   }
@@ -18,16 +18,16 @@ fun main() {
   println(part2(input))
 }
 
-fun List<String>.mapToCombinations() = map(String::toThrows).map { throws -> Combination(throws) }
-fun List<String>.mapToCombinationsBasedOnResult() = map(String::toCombinationFromThrowAndResult)
+private fun List<String>.mapToCombinations() = map(String::toThrows).map { throws -> Combination(throws) }
+private fun List<String>.mapToCombinationsBasedOnResult() = map(String::toCombinationFromThrowAndResult)
 
-fun List<Combination>.toScores() = map(Combination::toScore)
+private fun List<Combination>.toScores() = map(Combination::toScore)
 
-fun Combination.toScore() = yours versus theirs
+private fun Combination.toScore() = yours versus theirs
 
-fun String.toThrows() = split(" ").map(String::toThrow)
+private fun String.toThrows() = split(" ").map(String::toThrow)
 
-fun String.toCombinationFromThrowAndResult() = split(" ").let { (theirs, result) ->
+private fun String.toCombinationFromThrowAndResult() = split(" ").let { (theirs, result) ->
   Combination(theirs.toThrow(), result.toResult())
 }
 
@@ -45,25 +45,25 @@ data class Combination(val yours: Throw, val theirs: Throw) {
   }
 }
 
-fun roundScore(yours: Throw, theirs: Throw) = when {
+private fun roundScore(yours: Throw, theirs: Throw) = when {
   yours == theirs -> 3
   yours beats theirs -> 6
   else -> 0
 }
 
-infix fun Throw.versus(other: Throw) = this.shapeScore + roundScore(this, other)
+infix private fun Throw.versus(other: Throw) = this.shapeScore + roundScore(this, other)
 
 
-fun Throw.losingThrow() = Throw.winningCombinations[this]!!
-fun Throw.winningThrow() = Throw.winningCombinations.entries.find { (_, loser) -> loser == this }?.key!!
+private fun Throw.losingThrow() = Throw.winningCombinations[this]!!
+private fun Throw.winningThrow() = Throw.winningCombinations.entries.find { (_, loser) -> loser == this }?.key!!
 
-infix fun Result.against(theirs: Throw) = when (this) {
+private infix fun Result.against(theirs: Throw) = when (this) {
   Result.DRAW -> theirs
   Result.WIN -> theirs.winningThrow()
   Result.LOSE -> theirs.losingThrow()
 }
 
-fun String.toThrow() = when (this) {
+private fun String.toThrow() = when (this) {
   "A", "X" -> Throw.ROCK
   "B", "Y" -> Throw.PAPER
   "C", "Z" -> Throw.SCISSORS
@@ -86,7 +86,7 @@ enum class Throw(val shapeScore: Int) {
   }
 }
 
-fun String.toResult() = when (this) {
+private fun String.toResult() = when (this) {
   "X" -> Result.LOSE
   "Y" -> Result.DRAW
   "Z" -> Result.WIN
