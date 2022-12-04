@@ -18,6 +18,6 @@ fun main() {
   println(part2(input))
 }
 
-fun List<String>.mapToTotalCalories() = groupByBlanks()
+private fun List<String>.mapToTotalCalories() = groupByBlanks()
   .mapGroups { it.toInt() }
   .map { it.sum() }
