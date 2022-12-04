@@ -56,3 +56,5 @@ fun checkAndRun(
     }
     println(partFn(input))
 }
+
+fun <T> List<T>.toPair() = Pair(this[0], this[1])
