@@ -58,3 +58,5 @@ fun checkAndRun(
 }
 
 fun <T> List<T>.toPair() = Pair(this[0], this[1])
+
+fun <T> stackOf(vararg items: T): ArrayDeque<T> = ArrayDeque(items.toList())

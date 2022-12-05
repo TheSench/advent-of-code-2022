@@ -6,6 +6,7 @@ import mapGroups
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import readInput
+import stackOf
 
 class UtilsTest {
   @Nested
@@ -122,6 +123,25 @@ class UtilsTest {
         listOf(2, 4, 6),
         listOf(6, 4, 2)
       )
+    }
+  }
+
+  @Nested
+  @Suppress("ClassName")
+  inner class `stackOf should` {
+    @Test
+    fun `produce an empty stack when given empty input`() {
+      stackOf<String>() shouldBe ArrayDeque()
+    }
+
+    @Test
+    fun `produce a stack containing the given items`() {
+      stackOf("a", "b") shouldBe ArrayDeque<String>().apply {
+        add("a")
+        add("b")
+      }
+
+      stackOf("a", "b").first()
     }
   }
 }
