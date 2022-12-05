@@ -8,9 +8,10 @@ fun readInput(day: Int, name: String) = "$day".padStart(2, '0').let { dir ->
     {}.javaClass.getResourceAsStream("day$dir/$name.txt")!!.bufferedReader().readLines()
 }
 
-fun List<String>.groupByBlanks(): List<List<String>> {
-    var current: List<String> = listOf()
-    var groups: List<List<String>> = listOf()
+typealias Lines = List<String>
+fun Lines.groupByBlanks(): List<Lines> {
+    var current: Lines = listOf()
+    var groups: List<Lines> = listOf()
     for (line: String in this) {
         if (line.isBlank()) {
             groups = groups.plusElement(current)
@@ -36,7 +37,7 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
     .toString(16)
     .padStart(32, '0')
 
-fun runDay(day: Int, part1: (List<String>) -> Int, part1Check: Int, part2: (List<String>) -> Int, part2Check: Int) {
+fun <T, U> runDay(day: Int, part1: (Lines) -> T, part1Check: T, part2: (Lines) -> U, part2Check: U) {
     val testInput = readInput(day, "test")
     val input = readInput(day, "input")
 
@@ -44,11 +45,11 @@ fun runDay(day: Int, part1: (List<String>) -> Int, part1Check: Int, part2: (List
     checkAndRun(testInput, input, part2Check, part2)
 }
 
-fun checkAndRun(
-    testInput: List<String>,
-    input: List<String>,
-    checkValue: Int,
-    partFn: (List<String>) -> Int
+fun <T> checkAndRun(
+    testInput: Lines,
+    input: Lines,
+    checkValue: T,
+    partFn: (Lines) -> T
 ) {
     val testValue = partFn(testInput)
     check(partFn(testInput) == checkValue) {
@@ -58,3 +59,7 @@ fun checkAndRun(
 }
 
 fun <T> List<T>.toPair() = Pair(this[0], this[1])
+
+fun <T> stackOf(vararg items: T): ArrayDeque<T> = ArrayDeque(items.toList())
+
+fun <T> List<T>.toStack() = ArrayDeque(this)
