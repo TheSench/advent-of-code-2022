@@ -37,7 +37,7 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
     .toString(16)
     .padStart(32, '0')
 
-fun runDay(day: Int, part1: (Lines) -> Int, part1Check: Int, part2: (Lines) -> Int, part2Check: Int) {
+fun <T, U> runDay(day: Int, part1: (Lines) -> T, part1Check: T, part2: (Lines) -> U, part2Check: U) {
     val testInput = readInput(day, "test")
     val input = readInput(day, "input")
 
@@ -45,11 +45,11 @@ fun runDay(day: Int, part1: (Lines) -> Int, part1Check: Int, part2: (Lines) -> I
     checkAndRun(testInput, input, part2Check, part2)
 }
 
-fun checkAndRun(
+fun <T> checkAndRun(
     testInput: Lines,
     input: Lines,
-    checkValue: Int,
-    partFn: (Lines) -> Int
+    checkValue: T,
+    partFn: (Lines) -> T
 ) {
     val testValue = partFn(testInput)
     check(partFn(testInput) == checkValue) {
