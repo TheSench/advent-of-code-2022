@@ -52,7 +52,7 @@ fun <T> checkAndRun(
     partFn: (Lines) -> T
 ) {
     val testValue = partFn(testInput)
-    check(partFn(testInput) == checkValue) {
+    check(testValue == checkValue) {
         "Expected $checkValue but saw $testValue"
     }
     println(partFn(input))
