@@ -9,6 +9,7 @@ fun readInput(day: Int, name: String) = "$day".padStart(2, '0').let { dir ->
 }
 
 typealias Lines = List<String>
+
 fun Lines.groupByBlanks(): List<Lines> {
     var current: Lines = listOf()
     var groups: List<Lines> = listOf()
@@ -37,12 +38,20 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
     .toString(16)
     .padStart(32, '0')
 
-fun <T, U> runDay(day: Int, part1: (Lines) -> T, part1Check: T, part2: (Lines) -> U, part2Check: U) {
+fun <T, U> runDay(
+    day: Int,
+    part1: (Lines) -> T,
+    part1Check: T,
+    part2: (Lines) -> U,
+    part2Check: U,
+    part2TestFile: String = "test"
+) {
     val testInput = readInput(day, "test")
     val input = readInput(day, "input")
+    val testInput2 = if (part2TestFile == "test") testInput else readInput(day, part2TestFile)
 
     checkAndRun(testInput, input, part1Check, part1)
-    checkAndRun(testInput, input, part2Check, part2)
+    checkAndRun(testInput2, input, part2Check, part2)
 }
 
 fun <T> checkAndRun(
