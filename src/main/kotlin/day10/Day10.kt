@@ -69,12 +69,9 @@ private class Counter(val checkFrequency: Int = 20) {
 }
 
 private data class Cursor(val left: Int = 0, val row: Int = 0) {
-    fun move() = left.let {
-        if (it < 39) {
-            Cursor(left + 1, row)
-        } else {
-            Cursor(0, row + 1)
-        }
+    fun move() = when {
+        (left < 39) -> Cursor(left + 1, row)
+        else -> Cursor(0, row + 1)
     }
 }
 
@@ -88,10 +85,9 @@ private class CRT {
     fun print(lastSignal: Signal, nextSignal: Signal) {
         repeat(nextSignal.cycle - lastSignal.cycle) {
             lastSignal.x.let { x ->
-                screen[cursor.row][cursor.left] = if (cursor.left in (x - 1..x + 1)) {
-                    '#'
-                } else {
-                    '.'
+                screen[cursor.row][cursor.left] = when (cursor.left) {
+                    in (x - 1..x + 1) -> '#'
+                    else -> '.'
                 }
             }
             cursor = cursor.move()
