@@ -1,3 +1,8 @@
+package day04
+
+import runDay
+import toPair
+
 fun main() {
     fun part1(input: List<String>): Int {
         return input.mapToPairsOfRanges()

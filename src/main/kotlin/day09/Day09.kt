@@ -1,3 +1,6 @@
+package day09
+
+import runDay
 import kotlin.math.abs
 
 fun main() {

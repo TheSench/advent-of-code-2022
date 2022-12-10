@@ -1,3 +1,6 @@
+package day06
+
+import runDay
 import kotlin.collections.ArrayDeque
 
 fun main() {

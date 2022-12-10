@@ -1,3 +1,7 @@
+package day08
+
+import runDay
+
 fun main() {
     fun part1(input: List<String>) =
         input.toGrid().visibilityMap.sumOf { row -> row.count { it } }

@@ -1,3 +1,9 @@
+package day01
+
+import groupByBlanks
+import mapGroups
+import readInput
+
 fun main() {
   fun part1(input: List<String>): Int {
     return input.mapToTotalCalories().max()

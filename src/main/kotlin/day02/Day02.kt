@@ -1,3 +1,7 @@
+package day02
+
+import readInput
+
 private fun main() {
   fun part1(input: List<String>): Int {
     return input.mapToCombinations().toScores().also(::println).sum()

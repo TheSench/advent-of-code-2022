@@ -1,3 +1,9 @@
+package day05
+
+import Lines
+import groupByBlanks
+import runDay
+import toStack
 import kotlin.collections.ArrayDeque
 
 fun main() {

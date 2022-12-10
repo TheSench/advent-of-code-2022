@@ -1,3 +1,7 @@
+package day10
+
+import runDay
+
 fun main() {
     fun part1(input: List<String>): Int {
         val counter = Counter(20)
