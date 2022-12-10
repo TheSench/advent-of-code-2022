@@ -1,3 +1,7 @@
+package day09
+
+import runDay
+import utils.Point
 import kotlin.math.abs
 
 fun main() {
@@ -22,28 +26,15 @@ fun main() {
             }.tailVisited.size
 
 
-    runDay(
-        day = 9,
+    (object {}).runDay(
         part1 = ::part1,
         part1Check = 13,
         part2 = ::part2,
         part2Check = 36,
-        part2TestFile = "test2"
     )
 }
 
 private data class Move(val direction: Point, val distance: Int)
-private data class Point(val x: Int, val y: Int) {
-    operator fun plus(other: Point) = Point(
-        x = this.x + other.x,
-        y = this.y + other.y,
-    )
-
-    operator fun minus(other: Point) = Point(
-        x = this.x - other.x,
-        y = this.y - other.y,
-    )
-}
 
 private fun abs(point: Point) = Point(
     x = abs(point.x),
@@ -65,8 +56,6 @@ private class Rope(
         }
         tailVisited.add(points.last())
     }
-
-
 }
 
 private fun moveTail(head: Point, tail: Point): Point {
@@ -84,10 +73,9 @@ private fun moveTail(head: Point, tail: Point): Point {
     return tail
 }
 
-private fun Int.toUnit() = if (this < 0) {
-    this / -this
-} else {
-    this / this
+private fun Int.toUnit() = when {
+    (this < 0) -> -1
+    else -> 1
 }
 
 private typealias Direction = String

@@ -1,3 +1,7 @@
+package day03
+
+import runDay
+
 fun main() {
     fun part1(input: List<String>): Int {
         return input.mapToRucksacks()
@@ -18,8 +22,7 @@ fun main() {
             .sum()
     }
 
-    runDay(
-        day = 3,
+    (object {}).runDay(
         part1 = ::part1,
         part1Check = 157,
         part2 = ::part2,

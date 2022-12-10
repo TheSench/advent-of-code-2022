@@ -1,3 +1,6 @@
+package day06
+
+import runDay
 import kotlin.collections.ArrayDeque
 
 fun main() {
@@ -9,8 +12,7 @@ fun main() {
         it.findFirstDistinct(14)
     }
 
-    runDay(
-        day = 6,
+    (object {}).runDay(
         part1 = ::part1,
         part1Check = listOf(7, 5, 6, 10, 11),
         part2 = ::part2,

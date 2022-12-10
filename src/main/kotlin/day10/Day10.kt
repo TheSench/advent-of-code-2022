@@ -1,3 +1,8 @@
+package day10
+
+import runDay
+import utils.Point
+
 fun main() {
     fun part1(input: List<String>): Int {
         val counter = Counter(20)
@@ -20,8 +25,7 @@ fun main() {
         return "$crt"
     }
 
-    runDay(
-        day = 10,
+    (object {}).runDay(
         part1 = ::part1,
         part1Check = 13140,
         part2 = ::part2,
@@ -65,30 +69,26 @@ private class Counter(val checkFrequency: Int = 20) {
     }
 }
 
-private data class Cursor(val left: Int = 0, val row: Int = 0) {
-    fun move() = left.let {
-        if (it < 39) {
-            Cursor(left + 1, row)
-        } else {
-            Cursor(0, row + 1)
-        }
-    }
+private fun Point.move() = when {
+    (x < 39) -> Point(x + 1, y)
+    else -> Point(0, y + 1)
 }
+private val Point.row get() = y
+private val Point.left get() = x
 
 private class CRT {
     val screen = MutableList(6) {
         MutableList(40) { '.' }
     }
 
-    var cursor = Cursor()
+    var cursor = Point(0, 0)
 
     fun print(lastSignal: Signal, nextSignal: Signal) {
         repeat(nextSignal.cycle - lastSignal.cycle) {
             lastSignal.x.let { x ->
-                screen[cursor.row][cursor.left] = if (cursor.left in (x - 1..x + 1)) {
-                    '#'
-                } else {
-                    '.'
+                screen[cursor.row][cursor.left] = when (cursor.left) {
+                    in (x - 1..x + 1) -> '#'
+                    else -> '.'
                 }
             }
             cursor = cursor.move()

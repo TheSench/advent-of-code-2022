@@ -1,3 +1,8 @@
+package day04
+
+import runDay
+import toPair
+
 fun main() {
     fun part1(input: List<String>): Int {
         return input.mapToPairsOfRanges()
@@ -9,8 +14,7 @@ fun main() {
             .count { it.overlap() }
     }
 
-    runDay(
-        day = 4,
+    (object {}).runDay(
         part1 = ::part1,
         part1Check = 2,
         part2 = ::part2,
