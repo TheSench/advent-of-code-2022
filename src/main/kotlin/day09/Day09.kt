@@ -30,7 +30,6 @@ fun main() {
         part1Check = 13,
         part2 = ::part2,
         part2Check = 36,
-        part2TestFile = "test2"
     )
 }
 
