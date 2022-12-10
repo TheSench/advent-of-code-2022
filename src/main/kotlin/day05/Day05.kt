@@ -27,8 +27,7 @@ fun main() {
         }
         .getTopCrate()
 
-    runDay(
-        day = 5,
+    (object {}).runDay(
         part1 = ::part1,
         part1Check = "CMZ",
         part2 = ::part2,

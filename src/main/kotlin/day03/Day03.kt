@@ -22,8 +22,7 @@ fun main() {
             .sum()
     }
 
-    runDay(
-        day = 3,
+    (object {}).runDay(
         part1 = ::part1,
         part1Check = 157,
         part2 = ::part2,

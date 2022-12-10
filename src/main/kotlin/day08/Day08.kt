@@ -14,8 +14,7 @@ fun main() {
         }.maxOf { it.max() }
 
 
-    runDay(
-        day = 8,
+    (object {}).runDay(
         part1 = ::part1,
         part1Check = 21,
         part2 = ::part2,

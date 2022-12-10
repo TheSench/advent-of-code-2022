@@ -38,6 +38,26 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
     .toString(16)
     .padStart(32, '0')
 
+inline fun <reified Day, T, U> Day.runDay(
+    noinline part1: (Lines) -> T,
+    part1Check: T,
+    noinline part2: (Lines) -> U,
+    part2Check: U,
+    part2TestFile: String = "test"
+) {
+    runDay(
+        this.day,
+        part1,
+        part1Check,
+        part2,
+        part2Check,
+        part2TestFile,
+    )
+}
+
+inline val <reified Day> Day.day: Int
+    get() = Day::class.java.packageName.replace("day", "").toInt()
+
 fun <T, U> runDay(
     day: Int,
     part1: (Lines) -> T,

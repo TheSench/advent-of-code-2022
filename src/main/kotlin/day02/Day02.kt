@@ -1,6 +1,6 @@
 package day02
 
-import readInput
+import runDay
 
 private fun main() {
   fun part1(input: List<String>): Int {
@@ -11,15 +11,12 @@ private fun main() {
     return input.mapToCombinationsBasedOnResult().toScores().also(::println).sum()
   }
 
-  // test if implementation meets criteria from the description, like:
-  val testInput = readInput(2, "test")
-  check(part1(testInput) == 15)
-
-  val input = readInput(2, "input")
-  println(part1(input))
-
-  check(part2(testInput) == 12)
-  println(part2(input))
+  (object {}).runDay(
+    part1 = ::part1,
+    part1Check = 15,
+    part2 = ::part2,
+    part2Check = 12,
+  )
 }
 
 private fun List<String>.mapToCombinations() = map(String::toThrows).map { throws -> Combination(throws) }

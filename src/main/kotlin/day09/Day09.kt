@@ -25,8 +25,7 @@ fun main() {
             }.tailVisited.size
 
 
-    runDay(
-        day = 9,
+    (object {}).runDay(
         part1 = ::part1,
         part1Check = 13,
         part2 = ::part2,

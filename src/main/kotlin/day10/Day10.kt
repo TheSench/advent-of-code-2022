@@ -24,8 +24,7 @@ fun main() {
         return "$crt"
     }
 
-    runDay(
-        day = 10,
+    (object {}).runDay(
         part1 = ::part1,
         part1Check = 13140,
         part2 = ::part2,

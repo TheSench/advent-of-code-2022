@@ -14,8 +14,7 @@ fun main() {
             .count { it.overlap() }
     }
 
-    runDay(
-        day = 4,
+    (object {}).runDay(
         part1 = ::part1,
         part1Check = 2,
         part2 = ::part2,

@@ -2,7 +2,7 @@ package day01
 
 import groupByBlanks
 import mapGroups
-import readInput
+import runDay
 
 fun main() {
   fun part1(input: List<String>): Int {
@@ -13,15 +13,12 @@ fun main() {
     return input.mapToTotalCalories().sortedDescending().take(3).sum()
   }
 
-  // test if implementation meets criteria from the description, like:
-  val testInput = readInput(1, "test")
-  check(part1(testInput) == 24000)
-
-  val input = readInput(1, "input")
-  println(part1(input))
-
-  check(part2(testInput) == 45000)
-  println(part2(input))
+  (object {}).runDay(
+    part1 = ::part1,
+    part1Check = 24000,
+    part2 = ::part2,
+    part2Check = 45000,
+  )
 }
 
 private fun List<String>.mapToTotalCalories() = groupByBlanks()
