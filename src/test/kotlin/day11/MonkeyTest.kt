@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import java.math.BigInteger
 
 class MonkeyTest {
     @Nested
@@ -47,11 +48,11 @@ class MonkeyTest {
             val monkeys = monkey.inspectItems()
 
             monkeys shouldBe listOf(
-                20 to 0, // 54+6 -> 60/3 -> (20) % 19 ❌
-                23 to 0, // 65+6 -> 71/3 -> (23) % 19 ❌
-                27 to 0, // 75+6 -> 81/3 -> (27) % 19 ❌
-                26 to 0, // 74+6 -> 80/3 -> (26) % 19 ❌
-                19 to 2, // 51+6 -> 57/3 -> (19) % 19 ✅
+                BigInteger.valueOf(20) to 0, // 54+6 -> 60/3 -> (20) % 19 ❌
+                BigInteger.valueOf(23) to 0, // 65+6 -> 71/3 -> (23) % 19 ❌
+                BigInteger.valueOf(27) to 0, // 75+6 -> 81/3 -> (27) % 19 ❌
+                BigInteger.valueOf(26) to 0, // 74+6 -> 80/3 -> (26) % 19 ❌
+                BigInteger.valueOf(19) to 2, // 51+6 -> 57/3 -> (19) % 19 ✅
             )
         }
     }
@@ -67,7 +68,7 @@ class MonkeyTest {
             "10, 5, 2"
         )
         fun `return ifTrueTarget when worry level is divisible by testDivisibleBy`(
-            worryLevel: Int,
+            worryLevel: BigInteger,
             testDivisibleBy: Int,
             ifTrueTarget: Int
         ) {
@@ -88,7 +89,7 @@ class MonkeyTest {
             "8, 5, 2"
         )
         fun `return ifFalseTarget when worry level is NOT divisible by testDivisibleBy`(
-            worryLevel: Int,
+            worryLevel: BigInteger,
             testDivisibleBy: Int,
             ifFalseTarget: Int
         ) {
@@ -113,8 +114,8 @@ class MonkeyTest {
             "17, 5"
         )
         fun `divide the worry level by 3 and round down`(
-            worryLevel: Int,
-            expectedResult: Int
+            worryLevel: BigInteger,
+            expectedResult: BigInteger
         ) {
             val monkey = buildMonkey(
                 listOf(1, 2, 3),
@@ -133,8 +134,8 @@ class MonkeyTest {
                 listOf(1, 2, 3),
             )
 
-            monkey.catchItem(7)
-            monkey.catchItem(4)
+            monkey.catchItem(BigInteger.valueOf(7))
+            monkey.catchItem(BigInteger.valueOf(4))
 
             monkey.heldItems shouldBe listOf(1, 2, 3, 7, 4)
         }

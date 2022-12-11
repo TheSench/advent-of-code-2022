@@ -1,5 +1,7 @@
 package day11
 
+import java.math.BigInteger
+
 data class Monkey(
     val startingItems: List<Int>,
     val operation: Operation,
@@ -7,27 +9,29 @@ data class Monkey(
     val ifTrueTarget: Int,
     val ifFalseTarget: Int,
 ) {
-    private var items = startingItems.toMutableList()
+    private val bigTestDivisibleBy = testDivisibleBy.toBigInteger()
+    private var items = startingItems.map { it.toBigInteger() }.toMutableList()
     var inspectedItems = 0
         private set
-    val heldItems get() = items.toList()
+    val heldItems get() = items.map { it.toInt() }
 
-    fun inspectItems(): List<Pair<Int, Int>> {
+    fun inspectItems(getsBored: Boolean = true): List<Pair<BigInteger, Int>> {
         return items.map { worryLevel ->
             inspectedItems++
-            getBoredWith(operation.apply(worryLevel))
+            operation.apply(worryLevel)
+                .let { if (getsBored) getBoredWith(it) else it }
                 .let(::getTossTarget)
         }.also { items.clear() }
     }
 
-    fun getBoredWith(worryLevel: Int) = worryLevel / 3
+    fun getBoredWith(worryLevel: BigInteger) = worryLevel / BigInteger.valueOf(3)
 
-    fun getTossTarget(worryLevel: Int) = when (worryLevel % testDivisibleBy == 0) {
+    fun getTossTarget(worryLevel: BigInteger) = when (worryLevel % bigTestDivisibleBy == BigInteger.ZERO) {
         true -> worryLevel to ifTrueTarget
         false -> worryLevel to ifFalseTarget
     }
 
-    fun catchItem(item: Int) {
+    fun catchItem(item: BigInteger) {
         items.add(item)
     }
 }
