@@ -21,6 +21,7 @@ tasks {
 dependencies {
     testImplementation(kotlin("test"))
     testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.4")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
 }
 
 tasks.test {

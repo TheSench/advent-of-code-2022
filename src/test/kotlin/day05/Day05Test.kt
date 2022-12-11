@@ -1,13 +1,18 @@
+package day05
+
+import groupByBlanks
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import readInput
+import stackOf
 import java.util.*
 
 
 class Day05Test {
     @Nested
     @Suppress("ClassName")
-    class `ListOfString#toStacks should`() {
+    inner class `ListOfString#toStacks should`() {
         @Test
         fun `convert the test input to the expected list of stacks`() {
             val input = readInput(5, "test").groupByBlanks()[0]
@@ -22,7 +27,7 @@ class Day05Test {
 
     @Nested
     @Suppress("ClassName")
-    class `ListOfString#toInstructions should`() {
+    inner class `ListOfString#toInstructions should`() {
 
     }
 }
