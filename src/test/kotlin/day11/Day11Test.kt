@@ -20,7 +20,7 @@ class Day11Test {
             )
 
             input.toMonkey() shouldBe Monkey(
-                items = mutableListOf(54, 65, 75, 74),
+                startingItems = mutableListOf(54, 65, 75, 74),
                 operation = Add(6),
                 testDivisibleBy = 19,
                 ifTrueTarget = 3,
@@ -40,7 +40,7 @@ class Day11Test {
             )
 
             input.toMonkey() shouldBe Monkey(
-                items = mutableListOf(79, 98),
+                startingItems = mutableListOf(79, 98),
                 operation = Multiply(19),
                 testDivisibleBy = 23,
                 ifTrueTarget = 2,

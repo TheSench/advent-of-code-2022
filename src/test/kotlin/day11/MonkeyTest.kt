@@ -15,18 +15,18 @@ class MonkeyTest {
         @Test
         fun `toss all items to other monkeys`() {
             val monkey = buildMonkey(
-                items = listOf(1, 2, 3),
+                startingItems = listOf(1, 2, 3),
             )
 
             monkey.inspectItems()
 
-            monkey.items should beEmpty()
+            monkey.heldItems should beEmpty()
         }
 
         @Test
         fun `return a monkey for each item it had`() {
             val monkey = buildMonkey(
-                items = listOf(1, 2, 3),
+                startingItems = listOf(1, 2, 3),
             )
 
             val monkeys = monkey.inspectItems()
@@ -37,7 +37,7 @@ class MonkeyTest {
         @Test
         fun `return a correct monkey for each item it had`() {
             val monkey = buildMonkey(
-                items = listOf(54, 65, 75, 74, 51),
+                startingItems = listOf(54, 65, 75, 74, 51),
                 operation = Add(6),
                 testDivisibleBy = 19,
                 ifTrueTarget = 2,
@@ -123,16 +123,32 @@ class MonkeyTest {
             monkey.getBoredWith(worryLevel) shouldBe expectedResult
         }
     }
+
+    @Nested
+    @Suppress("ClassName")
+    inner class `#catchItem() should` {
+        @Test
+        fun `add the item to the end of the monkey's list`() {
+            val monkey = buildMonkey(
+                listOf(1, 2, 3),
+            )
+
+            monkey.catchItem(7)
+            monkey.catchItem(4)
+
+            monkey.heldItems shouldBe listOf(1, 2, 3, 7, 4)
+        }
+    }
 }
 
 private fun buildMonkey(
-    items: List<Int> = emptyList(),
+    startingItems: List<Int> = emptyList(),
     operation: Operation = Add(6),
     testDivisibleBy: Int = 19,
     ifTrueTarget: Int = 3,
     ifFalseTarget: Int = 5,
 ) = Monkey(
-    items = items.toMutableList(),
+    startingItems = startingItems,
     operation = operation,
     testDivisibleBy = testDivisibleBy,
     ifTrueTarget = ifTrueTarget,
