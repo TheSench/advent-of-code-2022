@@ -30,7 +30,7 @@ internal fun List<String>.toMonkey() = Monkey(
 private const val STARTING_ITEMS = "Starting items: "
 private fun String.toStartingItems() =
     this.substringAfter(STARTING_ITEMS).split(',')
-        .map  { it.trim().toInt() }
+        .map { it.trim().toInt() }
         .toMutableList()
 
 private const val TEST_DIVISIBLE_BY = "  Test: divisible by "
@@ -43,11 +43,19 @@ private fun String.toOperation() =
     this.substringAfter(OPERATION)
         .split(" ", limit = 2)
         .let {
-            val value = it.last().toInt()
-            when (it.first()) {
-                "+" -> Add(value)
-                "*" -> Multiply(value)
-                else -> throw IllegalArgumentException(it.first())
+            val value = it.last()
+            when (it.last()) {
+                "old" -> when (it.first()) {
+                    "+" -> DoubleIt
+                    "*" -> SquareIt
+                    else -> throw IllegalArgumentException(it.first())
+                }
+
+                else -> when (it.first()) {
+                    "+" -> Add(value.toInt())
+                    "*" -> Multiply(value.toInt())
+                    else -> throw IllegalArgumentException(it.first())
+                }
             }
         }
 

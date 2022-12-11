@@ -13,11 +13,11 @@ class OperationTest {
     fun `Add should add the given value to its value`(
         value: Int,
         otherValue: Int,
-        expectedSum: Int
+        expectedResult: Int
     ) {
         val operation = Add(value)
 
-        operation.apply(otherValue) shouldBe expectedSum
+        operation.apply(otherValue) shouldBe expectedResult
     }
 
     @ParameterizedTest
@@ -25,13 +25,43 @@ class OperationTest {
         "3, 5, 15",
         "2, 3, 6"
     )
-    fun `Multiply should multiply the given value to its value`(
+    fun `Multiply should multiply the given value by its value`(
         value: Int,
         otherValue: Int,
-        expectedProduct: Int
+        expectedResult: Int
     ) {
         val operation = Multiply(value)
 
-        operation.apply(otherValue) shouldBe expectedProduct
+        operation.apply(otherValue) shouldBe expectedResult
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "3, 9",
+        "2, 4",
+        "4, 16",
+    )
+    fun `Square should square the given value`(
+        value: Int,
+        expectedResult: Int
+    ) {
+        val operation = SquareIt
+
+        operation.apply(value) shouldBe expectedResult
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        "3, 6",
+        "2, 4",
+        "4, 8",
+    )
+    fun `Double should double the given value`(
+        value: Int,
+        expectedResult: Int
+    ) {
+        val operation = DoubleIt
+
+        operation.apply(value) shouldBe expectedResult
     }
 }

@@ -47,5 +47,37 @@ class Day11Test {
                 ifFalseTarget = 3,
             )
         }
+
+        @Test
+        fun `parse an doubling monkey`() {
+            val input = listOf(
+                "Monkey 1:",
+                "  Starting items: 54, 65, 75, 74",
+                "  Operation: new = old + old",
+                "  Test: divisible by 19",
+                "    If true: throw to monkey 3",
+                "    If false: throw to monkey 5",
+            )
+
+            val monkey = input.toMonkey()
+
+            monkey.operation shouldBe DoubleIt
+        }
+
+        @Test
+        fun `parse a squaring monkey`() {
+            val input = listOf(
+                "Monkey 0:",
+                "  Starting items: 79, 98",
+                "  Operation: new = old * old",
+                "  Test: divisible by 23",
+                "    If true: throw to monkey 2",
+                "    If false: throw to monkey 3",
+            )
+
+            val monkey = input.toMonkey()
+
+            monkey.operation shouldBe SquareIt
+        }
     }
 }
