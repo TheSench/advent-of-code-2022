@@ -47,11 +47,11 @@ class MonkeyTest {
             val monkeys = monkey.inspectItems()
 
             monkeys shouldBe listOf(
-                0, // 54+6 -> 60/3 -> 20 % 19 ❌
-                0, // 65+6 -> 71/3 -> 23 % 19 ❌
-                0, // 75+6 -> 81/3 -> 27 % 19 ❌
-                0, // 74+6 -> 80/3 -> 26 % 19 ❌
-                2, // 51+6 -> 57/3 -> 19 % 19 ✅
+                20 to 0, // 54+6 -> 60/3 -> (20) % 19 ❌
+                23 to 0, // 65+6 -> 71/3 -> (23) % 19 ❌
+                27 to 0, // 75+6 -> 81/3 -> (27) % 19 ❌
+                26 to 0, // 74+6 -> 80/3 -> (26) % 19 ❌
+                19 to 2, // 51+6 -> 57/3 -> (19) % 19 ✅
             )
         }
     }
@@ -77,7 +77,7 @@ class MonkeyTest {
                 ifFalseTarget = -1,
             )
 
-            monkey.getTossTarget(worryLevel) shouldBe ifTrueTarget
+            monkey.getTossTarget(worryLevel).second shouldBe ifTrueTarget
         }
 
         @ParameterizedTest
@@ -98,7 +98,7 @@ class MonkeyTest {
                 ifFalseTarget = ifFalseTarget,
             )
 
-            monkey.getTossTarget(worryLevel) shouldBe ifFalseTarget
+            monkey.getTossTarget(worryLevel).second shouldBe ifFalseTarget
         }
     }
 

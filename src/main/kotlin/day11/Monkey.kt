@@ -7,7 +7,7 @@ data class Monkey(
     val ifTrueTarget: Int,
     val ifFalseTarget: Int,
 ) {
-    fun inspectItems(): List<Int> {
+    fun inspectItems(): List<Pair<Int, Int>> {
         return items.map { worryLevel ->
             getBoredWith(operation.apply(worryLevel))
                 .let(::getTossTarget)
@@ -17,7 +17,7 @@ data class Monkey(
     fun getBoredWith(worryLevel: Int) = worryLevel / 3
 
     fun getTossTarget(worryLevel: Int) = when (worryLevel % testDivisibleBy == 0) {
-        true -> ifTrueTarget
-        false -> ifFalseTarget
+        true -> worryLevel to ifTrueTarget
+        false -> worryLevel to ifFalseTarget
     }
 }
