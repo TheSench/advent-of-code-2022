@@ -5,15 +5,17 @@ import runDay
 import utils.Point
 
 fun main() {
-    fun part1(input: List<String>) = shortestPath(input.toGrid())
+    fun part1(input: List<String>) = input.toGrid().shortestPath()
 
-    fun part2(input: List<String>) = 0
+    fun part2(input: List<String>) = input.toGrid().let {
+        it.shortestPath(it.lowestPoints)
+    }
 
     (object {}).runDay(
         part1 = ::part1,
         part1Check = 31,
         part2 = ::part2,
-        part2Check = -1,
+        part2Check = 29,
     )
 }
 
@@ -28,6 +30,16 @@ data class Grid(
 ) {
     operator fun get(point: Point) = elevations[point]
     operator fun contains(point: Point) = point.x in (elevations[0].indices) && point.y in elevations.indices
+    val lowestPoints
+        get() = elevations.flatMapIndexed { y, row ->
+            row.mapIndexedNotNull { x, elevation ->
+                if (elevation == 0) {
+                    Point(x, y)
+                } else {
+                    null
+                }
+            }
+        }
 }
 
 fun Lines.toGrid(): Grid = this.let {
@@ -50,10 +62,14 @@ fun Lines.toGrid(): Grid = this.let {
     )
 }
 
-fun shortestPath(grid: Grid): Int {
-    val visited = mutableMapOf(grid.start to 0)
+
+fun Grid.shortestPath(startingPoints: List<Point> = listOf(this.start)): Int {
+    val grid = this
+    val visited = mutableMapOf<Point, Int>().apply {
+        startingPoints.forEach { this[it] = 0 }
+    }
     val paths = ArrayDeque<Point>().apply {
-        add(grid.start)
+        startingPoints.forEach { point -> add(point) }
     }
     while (paths.size > 0) {
         val point = paths.removeFirst()
@@ -62,7 +78,7 @@ fun shortestPath(grid: Grid): Int {
         point.neighbors
             .filter {
                 it in grid &&
-                        it !in visited &&
+                        (it !in visited || newDistance < visited[it]!!) &&
                         grid[it] - currentElevation <= 1
             }
             .forEach { nextPoint ->
