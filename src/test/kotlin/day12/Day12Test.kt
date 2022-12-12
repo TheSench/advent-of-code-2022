@@ -39,7 +39,7 @@ class Day12Test {
             ).toGrid()
 
             grid.start shouldBe Point(1, 2)
-            grid.end shouldBe Point(4, 0)
+            grid.end shouldBe Point(4, 4)
         }
     }
 
