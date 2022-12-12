@@ -3,7 +3,6 @@ package day11
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import java.math.BigInteger
 
 class OperationTest {
     @ParameterizedTest
@@ -12,9 +11,9 @@ class OperationTest {
         "1, 3, 4"
     )
     fun `Add should add the given value to its value`(
-        value: Int,
-        otherValue: BigInteger,
-        expectedResult: BigInteger,
+        value: Long,
+        otherValue: Long,
+        expectedResult: Long,
     ) {
         val operation = Add(value)
 
@@ -27,9 +26,9 @@ class OperationTest {
         "2, 3, 6"
     )
     fun `Multiply should multiply the given value by its value`(
-        value: Int,
-        otherValue: BigInteger,
-        expectedResult: BigInteger,
+        value: Long,
+        otherValue: Long,
+        expectedResult: Long,
     ) {
         val operation = Multiply(value)
 
@@ -43,8 +42,8 @@ class OperationTest {
         "4, 16",
     )
     fun `Square should square the given value`(
-        value: BigInteger,
-        expectedResult: BigInteger,
+        value: Long,
+        expectedResult: Long,
     ) {
         val operation = SquareIt
 
@@ -58,8 +57,8 @@ class OperationTest {
         "4, 8",
     )
     fun `Double should double the given value`(
-        value: BigInteger,
-        expectedResult: BigInteger,
+        value: Long,
+        expectedResult: Long,
     ) {
         val operation = DoubleIt
 
