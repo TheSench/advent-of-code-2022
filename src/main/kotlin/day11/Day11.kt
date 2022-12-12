@@ -2,7 +2,6 @@ package day11
 
 import groupByBlanks
 import runDay
-import java.math.BigInteger
 
 fun main() {
     fun part1(input: List<String>) = input.toMonkeys()
@@ -22,14 +21,14 @@ fun main() {
             monkeys.map { it.inspectedItems }
                 .sortedDescending()
                 .take(2)
-                .fold(BigInteger.ONE) { a, b -> a * b.toBigInteger() }
+                .fold(1L) { a, b -> a * b }
         }
 
     (object {}).runDay(
         part1 = ::part1,
         part1Check = 10605,
         part2 = ::part2,
-        part2Check = BigInteger.valueOf(2713310158),
+        part2Check = 2713310158L,
     )
 }
 
@@ -42,11 +41,11 @@ internal fun processRound(monkeys: List<Monkey>) {
 }
 
 internal fun processWorriedRound(monkeys: List<Monkey>) {
-    val minimizer = monkeys.fold(1) { product, monkey -> product * monkey.testDivisibleBy }.toBigInteger()
+    val minimizer = monkeys.fold(1L) { product, monkey -> product * monkey.testDivisibleBy }.toLong()
     monkeys.forEach {
         val origItems = it.heldItems
         it.inspectItems(false).forEach { (newWorryLevel, monkey) ->
-            if (newWorryLevel < BigInteger.ZERO) {
+            if (newWorryLevel < 0) {
                 println(it)
                 println(origItems)
                 throw IllegalArgumentException()
@@ -70,7 +69,7 @@ internal fun List<String>.toMonkey() = Monkey(
 private const val STARTING_ITEMS = "Starting items: "
 private fun String.toStartingItems() =
     this.substringAfter(STARTING_ITEMS).split(',')
-        .map { it.trim().toInt() }
+        .map { it.trim().toLong() }
         .toMutableList()
 
 private const val TEST_DIVISIBLE_BY = "  Test: divisible by "
@@ -92,8 +91,8 @@ private fun String.toOperation() =
                 }
 
                 else -> when (it.first()) {
-                    "+" -> Add(value.toInt())
-                    "*" -> Multiply(value.toInt())
+                    "+" -> Add(value.toLong())
+                    "*" -> Multiply(value.toLong())
                     else -> throw IllegalArgumentException(it.first())
                 }
             }

@@ -1,21 +1,18 @@
 package day11
 
-import java.math.BigInteger
-
 data class Monkey(
-    val startingItems: List<Int>,
+    val startingItems: List<Long>,
     val operation: Operation,
     val testDivisibleBy: Int,
     val ifTrueTarget: Int,
     val ifFalseTarget: Int,
 ) {
-    private val bigTestDivisibleBy = testDivisibleBy.toBigInteger()
-    private var items = startingItems.map { it.toBigInteger() }.toMutableList()
-    var inspectedItems = 0
+    private var items = startingItems.map { it }.toMutableList()
+    var inspectedItems = 0L
         private set
     val heldItems get() = items.map { it.toInt() }
 
-    fun inspectItems(getsBored: Boolean = true): List<Pair<BigInteger, Int>> {
+    fun inspectItems(getsBored: Boolean = true): List<Pair<Long, Int>> {
         return items.map { worryLevel ->
             inspectedItems++
             operation.apply(worryLevel)
@@ -24,14 +21,14 @@ data class Monkey(
         }.also { items.clear() }
     }
 
-    fun getBoredWith(worryLevel: BigInteger) = worryLevel / BigInteger.valueOf(3)
+    fun getBoredWith(worryLevel: Long) = worryLevel / 3L
 
-    fun getTossTarget(worryLevel: BigInteger) = when (worryLevel % bigTestDivisibleBy == BigInteger.ZERO) {
+    fun getTossTarget(worryLevel: Long) = when (worryLevel % testDivisibleBy == 0L) {
         true -> worryLevel to ifTrueTarget
         false -> worryLevel to ifFalseTarget
     }
 
-    fun catchItem(item: BigInteger) {
+    fun catchItem(item: Long) {
         items.add(item)
     }
 }

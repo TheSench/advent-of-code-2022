@@ -1,29 +1,25 @@
 package day11
 
-import java.math.BigInteger
-
 sealed interface Operation {
-    fun apply(otherValue: BigInteger): BigInteger
+    fun apply(otherValue: Long): Long
 }
 
 data class Add(
-    val value: Int
+    val value: Long
 ) : Operation {
-    private val bigValue = value.toBigInteger()
-    override fun apply(otherValue: BigInteger) = bigValue + otherValue
+    override fun apply(otherValue: Long) = value + otherValue
 }
 
 data class Multiply(
-    val value: Int
+    val value: Long
 ) : Operation {
-    private val bigValue = value.toBigInteger()
-    override fun apply(otherValue: BigInteger) = bigValue * otherValue
+    override fun apply(otherValue: Long) = value * otherValue
 }
 
 object SquareIt : Operation {
-    override fun apply(otherValue: BigInteger) = otherValue * otherValue
+    override fun apply(otherValue: Long) = otherValue * otherValue
 }
 
 object DoubleIt : Operation {
-    override fun apply(otherValue: BigInteger) = otherValue + otherValue
+    override fun apply(otherValue: Long) = otherValue + otherValue
 }

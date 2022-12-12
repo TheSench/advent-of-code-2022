@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import java.math.BigInteger
 
 class MonkeyTest {
     @Nested
@@ -48,11 +47,11 @@ class MonkeyTest {
             val monkeys = monkey.inspectItems()
 
             monkeys shouldBe listOf(
-                BigInteger.valueOf(20) to 0, // 54+6 -> 60/3 -> (20) % 19 ❌
-                BigInteger.valueOf(23) to 0, // 65+6 -> 71/3 -> (23) % 19 ❌
-                BigInteger.valueOf(27) to 0, // 75+6 -> 81/3 -> (27) % 19 ❌
-                BigInteger.valueOf(26) to 0, // 74+6 -> 80/3 -> (26) % 19 ❌
-                BigInteger.valueOf(19) to 2, // 51+6 -> 57/3 -> (19) % 19 ✅
+                20L to 0, // 54+6 -> 60/3 -> (20) % 19 ❌
+                23L to 0, // 65+6 -> 71/3 -> (23) % 19 ❌
+                27L to 0, // 75+6 -> 81/3 -> (27) % 19 ❌
+                26L to 0, // 74+6 -> 80/3 -> (26) % 19 ❌
+                19L to 2, // 51+6 -> 57/3 -> (19) % 19 ✅
             )
         }
     }
@@ -68,7 +67,7 @@ class MonkeyTest {
             "10, 5, 2"
         )
         fun `return ifTrueTarget when worry level is divisible by testDivisibleBy`(
-            worryLevel: BigInteger,
+            worryLevel: Long,
             testDivisibleBy: Int,
             ifTrueTarget: Int
         ) {
@@ -89,7 +88,7 @@ class MonkeyTest {
             "8, 5, 2"
         )
         fun `return ifFalseTarget when worry level is NOT divisible by testDivisibleBy`(
-            worryLevel: BigInteger,
+            worryLevel: Long,
             testDivisibleBy: Int,
             ifFalseTarget: Int
         ) {
@@ -114,8 +113,8 @@ class MonkeyTest {
             "17, 5"
         )
         fun `divide the worry level by 3 and round down`(
-            worryLevel: BigInteger,
-            expectedResult: BigInteger
+            worryLevel: Long,
+            expectedResult: Long
         ) {
             val monkey = buildMonkey(
                 listOf(1, 2, 3),
@@ -134,8 +133,8 @@ class MonkeyTest {
                 listOf(1, 2, 3),
             )
 
-            monkey.catchItem(BigInteger.valueOf(7))
-            monkey.catchItem(BigInteger.valueOf(4))
+            monkey.catchItem(7L)
+            monkey.catchItem(4L)
 
             monkey.heldItems shouldBe listOf(1, 2, 3, 7, 4)
         }
@@ -143,7 +142,7 @@ class MonkeyTest {
 }
 
 private fun buildMonkey(
-    startingItems: List<Int> = emptyList(),
+    startingItems: List<Long> = emptyList(),
     operation: Operation = Add(6),
     testDivisibleBy: Int = 19,
     ifTrueTarget: Int = 3,
