@@ -14,12 +14,12 @@ import org.junit.jupiter.params.provider.MethodSource
 class Day13Test {
     @Nested
     @Suppress("ClassName")
-    inner class `Line#toPackets() should` {
+    inner class `Line#toPacket() should` {
         @Test
         fun `parse integers`() {
             val line = "[1,1,3,1,1]"
 
-            line.parse() shouldBe ListData(
+            line.toPacket() shouldBe ListData(
                 IntData(1),
                 IntData(1),
                 IntData(3),
@@ -32,7 +32,7 @@ class Day13Test {
         fun `parse lists`() {
             val line = "[[1],[2,3,4]]"
 
-            line.parse() shouldBe ListData(
+            line.toPacket() shouldBe ListData(
                 ListData(
                     IntData(1),
                 ),
@@ -48,7 +48,7 @@ class Day13Test {
         fun `parse combination of list and integer`() {
             val line = "[[1],4]"
 
-            line.parse() shouldBe ListData(
+            line.toPacket() shouldBe ListData(
                 ListData(IntData(1)),
                 IntData(4),
             )
@@ -58,7 +58,7 @@ class Day13Test {
         fun `parse deeply nested lists`() {
             val line = "[1,[2,[3,[4,[5,6,0]]]],8,9]"
 
-            line.parse() shouldBe ListData(
+            line.toPacket() shouldBe ListData(
                 IntData(1),
                 ListData(
                     IntData(2),
@@ -77,6 +77,16 @@ class Day13Test {
                 IntData(8),
                 IntData(9)
             )
+        }
+
+        @Test
+        fun `parse empty lists`() {
+            val line = "[]"
+
+            val packet = line.toPacket()
+
+            packet shouldBe ListData()
+            (packet as ListData).data.size shouldBe 0
         }
     }
 
@@ -164,6 +174,11 @@ class Day13Test {
                 val right = ListData(IntData(1), IntData(3))
 
                 left should beGreaterThan(right)
+            }
+
+            @Test
+            fun `treat empty list as smaller than non-empty list`() {
+                ListData() should beLessThan(ListData(ListData()))
             }
         }
 

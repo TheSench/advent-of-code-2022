@@ -1,21 +1,45 @@
 package day13
 
+import groupByBlanks
+import mapGroups
 import runDay
 
 fun main() {
-    fun part1(input: List<String>) = 0
+    fun part1(input: List<String>) = input.groupByBlanks()
+        .mapGroups { it.toPacket() }
+        .mapIndexed { index, packets ->
+            (index + 1) to packets.first().compareTo(packets.last())
+        }.filter { (_, comparison) -> comparison <= 0 }
+        .sumOf { (index) -> index }
 
-    fun part2(input: List<String>) = 0
+    fun part2(input: List<String>) = input.groupByBlanks()
+        .mapGroups { it.toPacket() }
+        .flatten()
+        .let {
+            it + listOf(
+                "[[2]]".toPacket(),
+                "[[6]]".toPacket(),
+            )
+        }
+        .sorted()
+        .mapIndexed { index, it -> index to it.toString() }
+        .filter { (_, it) ->
+            it in listOf(
+                "[[2]]",
+                "[[6]]",
+            )
+        }.map { (index) -> index + 1}
+        .fold(1) { acc, next -> acc * next }
 
     (object {}).runDay(
         part1 = ::part1,
-        part1Check = -1,
+        part1Check = 13,
         part2 = ::part2,
-        part2Check = -1,
+        part2Check = 140,
     )
 }
 
-fun String.parse(): PacketData {
+fun String.toPacket(): PacketData {
     val stack = ArrayDeque<MutableList<PacketData>>()
     var current = mutableListOf<PacketData>()
     var num = ""
@@ -49,8 +73,8 @@ fun String.parse(): PacketData {
     return current.first()
 }
 
-sealed interface PacketData {
-    operator fun compareTo(other: PacketData): Int
+sealed interface PacketData : Comparable<PacketData> {
+    override operator fun compareTo(other: PacketData): Int
 }
 
 @JvmInline
@@ -71,6 +95,12 @@ value class ListData(val data: List<PacketData>) : PacketData {
                 }
             }
     }
+
+    override fun toString(): String = data.joinToString(
+        prefix = "[",
+        postfix = "]",
+        separator = ",",
+    )
 }
 
 @JvmInline
@@ -79,4 +109,6 @@ value class IntData(val data: Int) : PacketData {
         is IntData -> this.data.compareTo(other.data)
         is ListData -> ListData(this).compareTo(other)
     }
+
+    override fun toString(): String = data.toString()
 }
