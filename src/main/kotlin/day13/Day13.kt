@@ -25,6 +25,7 @@ fun String.parse(): PacketData {
                 stack.addFirst(current)
                 current = mutableListOf()
             }
+
             ']' -> {
                 if (num.isNotBlank()) {
                     current.add(IntData(num.toInt()))
@@ -34,22 +35,48 @@ fun String.parse(): PacketData {
                 current = stack.removeFirst()
                 current.add(next)
             }
+
             ',' -> {
                 if (num.isNotBlank()) {
                     current.add(IntData(num.toInt()))
                     num = ""
                 }
             }
+
             else -> num += char
         }
     }
     return current.first()
 }
 
-sealed interface PacketData
+sealed interface PacketData {
+    operator fun compareTo(other: PacketData): Int
+}
+
 @JvmInline
 value class ListData(val data: List<PacketData>) : PacketData {
-    constructor(vararg data: PacketData) : this(data.toList())
+    constructor(vararg values: PacketData) : this(values.toList())
+
+    override operator fun compareTo(other: PacketData): Int = when (other) {
+        is IntData -> this.compareTo(ListData(other))
+        is ListData -> this.data.zip(other.data)
+            .fold(0) { _, (left, right) ->
+                val comparison = left.compareTo(right)
+                if (comparison != 0) return comparison
+                0
+            }.let { comparison ->
+                when (comparison) {
+                    0 -> this.data.size.compareTo(other.data.size)
+                    else -> comparison
+                }
+            }
+    }
 }
+
 @JvmInline
-value class IntData(val data: Int) : PacketData
+value class IntData(val data: Int) : PacketData {
+    override operator fun compareTo(other: PacketData): Int = when (other) {
+        is IntData -> this.data.compareTo(other.data)
+        is ListData -> ListData(this).compareTo(other)
+    }
+}
