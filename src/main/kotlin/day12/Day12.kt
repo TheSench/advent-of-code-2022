@@ -7,8 +7,12 @@ import utils.Point
 fun main() {
     fun part1(input: List<String>) = input.toGrid().shortestPath()
 
-    fun part2(input: List<String>) = input.toGrid().let {
-        it.shortestPath(it.lowestPoints)
+    fun part2(input: List<String>) = input.toGrid().let {  grid ->
+        grid.shortestPath(
+            startingPoint = grid.end,
+            isDestination = { grid[this] == 0 },
+            canHandle = { it >= -1 }
+        )
     }
 
     (object {}).runDay(
@@ -30,16 +34,6 @@ data class Grid(
 ) {
     operator fun get(point: Point) = elevations[point]
     operator fun contains(point: Point) = point.x in (elevations[0].indices) && point.y in elevations.indices
-    val lowestPoints
-        get() = elevations.flatMapIndexed { y, row ->
-            row.mapIndexedNotNull { x, elevation ->
-                if (elevation == 0) {
-                    Point(x, y)
-                } else {
-                    null
-                }
-            }
-        }
 }
 
 fun Lines.toGrid(): Grid = this.let {
@@ -63,14 +57,14 @@ fun Lines.toGrid(): Grid = this.let {
 }
 
 
-fun Grid.shortestPath(startingPoints: List<Point> = listOf(this.start)): Int {
+fun Grid.shortestPath(
+    startingPoint: Point = this.start,
+    isDestination: Point.() -> Boolean = { this == this@shortestPath.end },
+    canHandle: (elevationChange: Int) -> Boolean = { it <= 1 }
+): Int {
     val grid = this
-    val visited = mutableMapOf<Point, Int>().apply {
-        startingPoints.forEach { this[it] = 0 }
-    }
-    val paths = ArrayDeque<Point>().apply {
-        startingPoints.forEach { point -> add(point) }
-    }
+    val visited = mutableMapOf<Point, Int>().apply { this[startingPoint] = 0 }
+    val paths = ArrayDeque<Point>().apply { add(startingPoint) }
     while (paths.size > 0) {
         val point = paths.removeFirst()
         val currentElevation = grid[point]
@@ -79,11 +73,11 @@ fun Grid.shortestPath(startingPoints: List<Point> = listOf(this.start)): Int {
             .filter {
                 it in grid &&
                         (it !in visited || newDistance < visited[it]!!) &&
-                        grid[it] - currentElevation <= 1
+                        canHandle(grid[it] - currentElevation)
             }
             .forEach { nextPoint ->
-                when (nextPoint) {
-                    grid.end -> return newDistance
+                when {
+                    nextPoint.isDestination() -> return newDistance
                     else -> {
                         visited[nextPoint] = newDistance
                         paths.addLast(nextPoint)
