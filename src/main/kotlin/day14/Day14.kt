@@ -11,13 +11,19 @@ fun main() {
             .dropSand()
             .size
 
-    fun part2(input: List<String>) = 0
+    fun part2(input: List<String>) =
+        input
+            .map { it.toLine() }
+            .toGrid()
+            .addFloor()
+            .dropSand()
+            .size
 
     (object {}).runDay(
         part1 = ::part1,
         part1Check = 24,
         part2 = ::part2,
-        part2Check = 140,
+        part2Check = 93,
     )
 }
 
@@ -57,6 +63,7 @@ fun Grid.dropSand(start: Point = Point(500, 0)): Set<Point> {
         pointConsidering = when (next) {
             null -> {
                 sand.add(pointConsidering)
+                if (pointsToRevisit.size == 0) break
                 pointsToRevisit.removeFirst()
             }
 
@@ -67,6 +74,13 @@ fun Grid.dropSand(start: Point = Point(500, 0)): Set<Point> {
         }
     }
     return sand
+}
+
+fun Grid.addFloor(center: Point = Point(500, 0)): Grid {
+    val maxY = this.maxOf { it.y } + 2
+    val minX = center.x - maxY
+    val maxX = center.x + maxY
+    return this + (Point(minX, maxY)..Point(maxX, maxY)).toSet()
 }
 
 fun Point.next(stones: Grid, sand: Grid) = listOf(
