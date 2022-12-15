@@ -1,6 +1,7 @@
 package day09
 
 import runDay
+import toUnit
 import utils.Point
 import kotlin.math.abs
 
@@ -71,11 +72,6 @@ private fun moveTail(head: Point, tail: Point): Point {
         }
     }
     return tail
-}
-
-private fun Int.toUnit() = when {
-    (this < 0) -> -1
-    else -> 1
 }
 
 private typealias Direction = String

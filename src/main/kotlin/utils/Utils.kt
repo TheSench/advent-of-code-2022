@@ -94,3 +94,9 @@ fun <T> List<T>.toPair() = Pair(this[0], this[1])
 fun <T> stackOf(vararg items: T): ArrayDeque<T> = ArrayDeque(items.toList())
 
 fun <T> List<T>.toStack() = ArrayDeque(this)
+
+fun Int.toUnit() = when {
+    (this < 0) -> -1
+    (this == 0) -> 0
+    else -> 1
+}
