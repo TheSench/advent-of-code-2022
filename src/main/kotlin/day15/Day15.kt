@@ -1,13 +1,13 @@
 package day15
 
-import sequenceDay
+import runDay
 import utils.Point
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
 fun main() {
-    fun part1(input: Sequence<String>): Int {
+    fun part1(input: List<String>): Int {
         var minX: Int = Int.MAX_VALUE
         var maxX: Int = Int.MIN_VALUE
         val y = 2000000
@@ -41,17 +41,60 @@ fun main() {
             }.count { it == '#' }
     }
 
-    fun part2(input: Sequence<String>) = 0
+    fun part2(input: List<String>): Long {
+        var maxCoordX = 0
+        var maxCoordY = 0
+        return input
+            .map { it.parse() }
+            .map {
+                maxCoordX = max(maxCoordX, it.xBounds.last)
+                maxCoordY = max(maxCoordX, it.yBounds.last)
+                it
+            }
+            .toList()
+            .let found@{ row ->
+                val maxX = min(4000000, maxCoordX)
+                val maxY = min(4000000, maxCoordY)
+                (0..maxY).forEach { y ->
+                    row.filter { y in it.yBounds }
+                        .checkForBeacon(y, maxX)?.let {
+                            return@found it
+                        }
+                }
+                Point(0, 0)
+            }.let { (x, y) ->
+                x.toLong() * 4000000 + y.toLong()
+            }
+    }
 
-    (object {}).sequenceDay(
+    (object {}).runDay(
         part1 = ::part1,
         part1Check = 0, // change to 26 to test output - test and actual check different rows
         part2 = ::part2,
-        part2Check = 93,
+        part2Check = 108000000L, // change to 56000011 to test output - test and actual check different rows
     )
 }
 
-data class RowChecker(val lastX: Int, val noBeacons: Int = 0)
+fun List<ParsedLine>.checkForBeacon(y: Int, maxX: Int): Point? {
+    this.map { coords ->
+        val narrowing = abs(y - coords.sensor.y)
+        (coords.xBounds.first + narrowing)..(coords.xBounds.last - narrowing)
+    }.sortedBy { it.first }
+        .let { ranges ->
+            val lastX = ranges.maxOf { it.last }
+            when {
+                (ranges.first().first > 0) -> return Point(0, y)
+                (lastX < maxX) -> return Point(lastX + 1, y)
+                else -> ranges
+            }
+        }.fold(0) { lastX, nextRange ->
+            if (nextRange.first > lastX + 1) {
+                return Point(lastX + 1, y)
+            }
+            max(lastX, nextRange.last)
+        }
+    return null
+}
 
 data class ParsedLine(val sensor: Point, val beacon: Point) {
     private val manhattanDistance = sensor manhattanDistanceTo beacon
