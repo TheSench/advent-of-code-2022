@@ -1,6 +1,7 @@
 package utils
 
 import toUnit
+import kotlin.math.abs
 
 data class Point(val x: Int, val y: Int) : Comparable<Point> {
     operator fun plus(other: Point) = Point(
@@ -20,6 +21,8 @@ data class Point(val x: Int, val y: Int) : Comparable<Point> {
         OrthogonalPointRange(this, endInclusive)
 
     fun toUnit() = Point(x.toUnit(), y.toUnit())
+
+    fun toAbsolute() = Point(abs(x), abs((y)))
 
     companion object {
         val comparator = compareBy<Point> { it.x }.thenBy { it.y }
