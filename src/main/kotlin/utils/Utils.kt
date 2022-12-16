@@ -10,6 +10,7 @@ fun resource(day: Int, name: String): InputStream? = "$day".padStart(2, '0').let
  * Reads lines from the given input txt file.
  */
 fun readInput(day: Int, name: String) = resource(day, name)!!.bufferedReader().readLines()
+fun sequenceInput(day: Int, name: String) = resource(day, name)!!.bufferedReader().lineSequence()
 
 fun exists(day: Int, name: String) = resource(day, name) != null
 
@@ -49,25 +50,6 @@ inline fun <reified Day, T, U> Day.runDay(
     noinline part2: (Lines) -> U,
     part2Check: U,
 ) {
-    runDay(
-        this.day,
-        part1,
-        part1Check,
-        part2,
-        part2Check,
-    )
-}
-
-inline val <reified Day> Day.day: Int
-    get() = Day::class.java.packageName.replace("day", "").toInt()
-
-fun <T, U> runDay(
-    day: Int,
-    part1: (Lines) -> T,
-    part1Check: T,
-    part2: (Lines) -> U,
-    part2Check: U,
-) {
     val testInput = readInput(day, "test")
     val input = readInput(day, "input")
     val testInput2 = if (exists(day, "test2")) readInput(day, "test2") else testInput
@@ -75,12 +57,41 @@ fun <T, U> runDay(
     checkAndRun(testInput, input, part1Check, part1)
     checkAndRun(testInput2, input, part2Check, part2)
 }
+inline fun <reified Day, T, U> Day.runDay(
+    noinline part1: (Sequence<String>) -> T,
+    part1Check: T,
+    noinline part2: (Sequence<String>) -> U,
+    part2Check: U,
+) {
+    val testInput = sequenceInput(day, "test")
+    val input = sequenceInput(day, "input")
+    val testInput2 = if (exists(day, "test2")) sequenceInput(day, "test2") else testInput
+
+    checkAndRun(testInput, input, part1Check, part1)
+    checkAndRun(testInput2, input, part2Check, part2)
+}
+
+inline val <reified Day> Day.day: Int
+    get() = Day::class.java.packageName.replace("day", "").toInt()
 
 fun <T> checkAndRun(
     testInput: Lines,
     input: Lines,
     checkValue: T,
     partFn: (Lines) -> T
+) {
+    val testValue = partFn(testInput)
+    check(testValue == checkValue) {
+        "Expected $checkValue but saw $testValue"
+    }
+    println(partFn(input))
+}
+
+fun <T> checkAndRun(
+    testInput: Sequence<String>,
+    input: Sequence<String>,
+    checkValue: T,
+    partFn: (Sequence<String>) -> T
 ) {
     val testValue = partFn(testInput)
     check(testValue == checkValue) {
