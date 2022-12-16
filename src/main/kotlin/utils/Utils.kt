@@ -57,7 +57,7 @@ inline fun <reified Day, T, U> Day.runDay(
     checkAndRun(testInput, input, part1Check, part1)
     checkAndRun(testInput2, input, part2Check, part2)
 }
-inline fun <reified Day, T, U> Day.runDay(
+inline fun <reified Day, T, U> Day.sequenceDay(
     noinline part1: (Sequence<String>) -> T,
     part1Check: T,
     noinline part2: (Sequence<String>) -> U,

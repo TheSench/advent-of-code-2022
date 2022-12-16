@@ -19,6 +19,7 @@ class Day15Test {
             )
         }
     }
+
     @Nested
     @Suppress("ClassName")
     inner class `String#toPoint() should` {
@@ -34,6 +35,22 @@ class Day15Test {
             val line = "Something at x=-3, y=-5"
 
             line.toPoint() shouldBe Point(-3, -5)
+        }
+    }
+
+    @Nested
+    @Suppress("ClassName")
+    inner class `Point#manhattanDistanceTo(Point) should` {
+        // "Manhattan Distance" between two points is the sum of their distance on the x-axis
+        // and their distance on the y-axis
+        @Test
+        fun `return the Manhattan Distance between them when both distances are positive`() {
+            Point(4, 2) manhattanDistanceTo Point(9, 3) shouldBe 18
+        }
+
+        @Test
+        fun `return the Manhattan Distance between them when both distances are negative`() {
+            Point(14, 6) manhattanDistanceTo Point(5, 3)  shouldBe 12
         }
     }
 }

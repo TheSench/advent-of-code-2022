@@ -4,6 +4,8 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 class PointTest {
     @Nested
@@ -21,6 +23,24 @@ class PointTest {
         @Test
         fun `create a new point with x equal to the difference of both x's and y equal to the difference of both y's`() {
             (Point(3, 4) - Point(7, 2)) shouldBe Point(-4, 2)
+        }
+    }
+
+    @Nested
+    @Suppress("ClassName")
+    inner class `Point#toAbsolute(other) should` {
+        @ParameterizedTest
+        @CsvSource(
+            " 1, 1,   1, 1",
+            " 2, 3,   2, 3",
+            "-1,-1,   1, 1",
+            "-4, 7,   4, 7"
+        )
+        fun `create a new point with from the absolute value of the original point's x and y`(
+            oldX: Int, oldY: Int,
+            newX: Int, newY: Int,
+        ) {
+            Point(oldX, oldY).toAbsolute() shouldBe Point(newX, newY)
         }
     }
 
