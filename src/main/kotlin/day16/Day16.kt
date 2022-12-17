@@ -1,13 +1,12 @@
 package day16
 
 import runDay
-import stackOf
 
 fun main() {
     fun part1(input: List<String>) = input.parse()
         .let { rooms ->
             val stack = listOf(
-                RoomState(emptySet(), "AA")
+                RoomState(emptySet(), listOf("AA"))
             )
             (1..30).fold(stack) { statesAtThisStep, i ->
                 println(i)
@@ -16,13 +15,23 @@ fun main() {
             }.maxOf { it.relieved }
         }
 
-    fun part2(input: List<String>) = 0
+    fun part2(input: List<String>) = input.parse()
+        .let { rooms ->
+            val stack = listOf(
+                RoomState(emptySet(), listOf("AA", "AA"))
+            )
+            (1..26).fold(stack) { statesAtThisStep, i ->
+                println(i)
+                statesAtThisStep.flatMap { it.getTransitions(rooms) }
+                    .distinct().sortedByDescending { it.relieved + it.relieving }.take(500)
+            }.maxOf { it.relieved }
+        }
 
     (object {}).runDay(
         part1 = ::part1,
         part1Check = 1651,
         part2 = ::part2,
-        part2Check = -1,
+        part2Check = 1707,
     )
 }
 
@@ -52,33 +61,38 @@ fun String.toRoom(): Room {
 typealias Rooms = Map<String, Room>
 
 fun RoomState.getTransitions(rooms: Rooms): List<RoomState> {
-    val room = rooms[current]
+    val after1Minute = copy(
+        current = emptyList(),
+        relieved = relieved + relieving
+    )
+    return current.fold(listOf(after1Minute)) { states, currentRoom ->
+        states.flatMap { getTransitions(it, currentRoom, rooms) }
+    }.map {
+        it.copy(current = it.current.sorted())
+    }
+}
+
+fun getTransitions(baseState: RoomState, currentRoom: String, rooms: Rooms): List<RoomState> {
+    val room = rooms[currentRoom]
     val options = room!!.connected.map { newRoom ->
-        copy(
-            enabledRooms = enabledRooms,
-            current = newRoom,
-            path = path + newRoom,
-            relieving = relieving,
-            relieved = relieved + relieving,
+        baseState.copy(
+            current = baseState.current + newRoom,
         )
     }
-    return if (enabledRooms.contains(current)) {
+    return if (baseState.enabledRooms.contains(currentRoom)) {
         options
     } else {
-        options + copy(
-            enabledRooms = enabledRooms + current,
-            current = current,
-            path = path + current,
-            relieving = relieving + room.flowRate,
-            relieved = relieved + relieving,
+        options + baseState.copy(
+            current = baseState.current + currentRoom,
+            enabledRooms = baseState.enabledRooms + currentRoom,
+            relieving = baseState.relieving + room.flowRate,
         )
     }
 }
 
 data class RoomState(
     val enabledRooms: Set<String>,
-    val current: String,
-    val path: List<String> = listOf(current),
+    val current: List<String>,
     val relieving: Int = 0,
     val relieved: Int = 0,
 )
