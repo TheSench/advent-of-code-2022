@@ -1,9 +1,20 @@
 package day16
 
 import runDay
+import stackOf
 
 fun main() {
     fun part1(input: List<String>) = input.parse()
+        .let { rooms ->
+            val stack = listOf(
+                RoomState(emptySet(), "AA")
+            )
+            (1..30).fold(stack) { statesAtThisStep, i ->
+                println(i)
+                statesAtThisStep.flatMap { it.getTransitions(rooms) }
+                    .distinct().sortedByDescending { it.relieved + it.relieving }.take(500)
+            }.maxOf { it.relieved }
+        }
 
     fun part2(input: List<String>) = 0
 
@@ -18,7 +29,7 @@ fun main() {
 data class Room(
     val name: String,
     val flowRate: Int,
-    val connected: List<String>
+    val connected: List<String>,
 )
 
 fun List<String>.parse() = map { it.toRoom() }.associateBy { it -> it.name }
@@ -37,3 +48,37 @@ fun String.toRoom(): Room {
         connected.split(", ")
     )
 }
+
+typealias Rooms = Map<String, Room>
+
+fun RoomState.getTransitions(rooms: Rooms): List<RoomState> {
+    val room = rooms[current]
+    val options = room!!.connected.map { newRoom ->
+        copy(
+            enabledRooms = enabledRooms,
+            current = newRoom,
+            path = path + newRoom,
+            relieving = relieving,
+            relieved = relieved + relieving,
+        )
+    }
+    return if (enabledRooms.contains(current)) {
+        options
+    } else {
+        options + copy(
+            enabledRooms = enabledRooms + current,
+            current = current,
+            path = path + current,
+            relieving = relieving + room.flowRate,
+            relieved = relieved + relieving,
+        )
+    }
+}
+
+data class RoomState(
+    val enabledRooms: Set<String>,
+    val current: String,
+    val path: List<String> = listOf(current),
+    val relieving: Int = 0,
+    val relieved: Int = 0,
+)
