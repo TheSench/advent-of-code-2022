@@ -7,49 +7,76 @@ import runDay
 import utils.RepeatingIterator
 
 fun main() {
-    fun part1(input: List<String>) = input
-        .map {
+    fun List<String>.simulate(num: Long) =
+        map {
             it.map(JetDirection::fromChar)
         }.map(::RepeatingIterator)
-        .first()
-        .let { jetDirections ->
-            val chamber = mutableListOf<MutableSet<Int>>()
-            val rocks = RepeatingIterator(rockPattern)
-            repeat(2022) {
-                chamber.addRock(rocks.next(), jetDirections)
-//                chamber.print()
-//                repeat(5) { println() }
+            .first()
+            .let { jetDirections ->
+                val cave = Cave()
+                val rocks = RepeatingIterator(rockPattern)
+                val memoized = mutableMapOf<Long, Pair<Long, Long>>()
+                var i = 0L
+                val end = num
+                var heightOffset = 0L
+                while (i < end) {
+                    i++
+                    cave.addRock(rocks.next(), jetDirections)
+                    val signature = cave.signature(rocks, jetDirections)
+                    if (memoized.containsKey(signature)) {
+                        val (prevI, prevSize) = memoized[signature]!!
+                        val diffI = i - prevI
+                        val diffSize = cave.fullSize - prevSize
+                        val iterations = (end - i) / diffI
+                        i += iterations * diffI
+                        heightOffset = iterations * diffSize
+                        break
+                    }
+                    memoized[signature] = i to cave.fullSize
+                }
+                while (i < end) {
+                    cave.addRock(rocks.next(), jetDirections)
+                    i++
+                }
+                cave.fullSize + heightOffset
             }
-            chamber.size
-        }
 
-    fun part2(input: List<String>) = 0
+    fun part1(input: List<String>) = input.simulate(2_022L)
+
+    fun part2(input: List<String>) = input.simulate(1_000_000_000_000L)
 
     (object {}).runDay(
         part1 = ::part1,
-        part1Check = 3068,
+        part1Check = 3068L,
         part2 = ::part2,
-        part2Check = 1514285714288,
+        part2Check = 1514285714288L,
     )
 }
 
 typealias Rock = List<IntRange>
-typealias Chamber = MutableList<MutableSet<Int>>
+typealias Rocks = RepeatingIterator<Rock>
 typealias JetDirections = RepeatingIterator<JetDirection>
 
-fun Chamber.print() = reversed()
-    .forEach { row ->
-        print("X")
-        (0..6).forEach {
-            when (it) {
-                in row -> print("#")
-                else -> print(".")
-            }
+class Cave(
+    private val chamber: MutableList<MutableSet<Int>> = mutableListOf()
+) : MutableList<MutableSet<Int>> by chamber {
+    val fullSize: Long get() = chamber.size.toLong()
+
+    private fun getTop8() = chamber.reversed().take(8).flatMap { row ->
+        (0..6).map {
+            row.contains(it)
         }
-        println("X")
+    }.fold(0L) { bits, next ->
+        bits * 2 + if (next) 1 else 0
     }
 
-fun Chamber.addRock(rock: Rock, jetDirections: JetDirections) {
+    fun signature(rocks: Rocks, jets: JetDirections): Long =
+        (getTop8() * rocks.size.toLong() +
+                rocks.current.toLong()) * jets.size.toLong() +
+                jets.current.toLong()
+}
+
+fun Cave.addRock(rock: Rock, jetDirections: JetDirections) {
     val chamber = this
     var y = this.size + 3
     val width = rock.maxOf { it.last } + 1
