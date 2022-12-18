@@ -4,6 +4,7 @@ import day17.JetDirection.LEFT
 import day17.JetDirection.RIGHT
 import groupByBlanks
 import runDay
+import utils.RepeatingIterator
 
 fun main() {
     fun part1(input: List<String>) = input
@@ -59,7 +60,8 @@ fun Chamber.addRock(rock: Rock, jetDirections: JetDirections) {
                 .filter { y + it < chamber.size }
                 .any { yToCheck ->
                     (rock[yToCheck].first + x - 1) in chamber[yToCheck + y]
-                }) {
+                }
+        ) {
             return x
         }
         return x - 1
@@ -71,7 +73,8 @@ fun Chamber.addRock(rock: Rock, jetDirections: JetDirections) {
                 .filter { y + it < chamber.size }
                 .any { yToCheck ->
                     (rock[yToCheck].last + x + 1) in chamber[yToCheck + y]
-                }) {
+                }
+        ) {
             return x
         }
         return x + 1
@@ -132,18 +135,6 @@ enum class JetDirection {
             '>' -> RIGHT
             else -> throw IllegalArgumentException()
         }
-    }
-}
-
-class RepeatingIterator<T>(private val pattern: List<T>) : Iterator<T> {
-    private var current = 0
-    override fun hasNext() = true
-
-    override fun next(): T {
-        if (current >= pattern.size) {
-            current = 0
-        }
-        return pattern[current++]
     }
 }
 
