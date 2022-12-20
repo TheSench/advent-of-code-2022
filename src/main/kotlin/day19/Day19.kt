@@ -1,7 +1,6 @@
 package day19
 
 import runDay
-import kotlin.math.max
 
 fun main() {
 
@@ -11,13 +10,18 @@ fun main() {
       (index + 1) to blueprint.findBest(24)
     }.sumOf { (id, best) -> id * best }
 
-  fun part2(input: List<String>) = 0
+  fun part2(input: List<String>) = input
+    .take(3)
+    .map(String::toBlueprint)
+    .map {
+      it.findBest(32)
+    }.reduce { product, next -> product * next }
 
   (object {}).runDay(
     part1 = ::part1,
     part1Check = 33,
     part2 = ::part2,
-    part2Check = -1,
+    part2Check = 3472,
   )
 }
 
@@ -40,6 +44,11 @@ private fun Blueprint.findBest(iterations: Int): Int {
       best.add(state)
       cache
     }.values.flatten()
+      .sortedWith(compareByDescending<State> { it.geodes }.thenByDescending { it.geodeCollectingRobots }
+        .thenByDescending { it.obsidian }.thenByDescending { it.obsidianCollectingRobots }
+        .thenByDescending { it.clay }.thenByDescending { it.clayCollectingRobots }
+        .thenByDescending { it.ore }.thenByDescending { it.oreCollectingRobots })
+      .take(2500)
   }
   return states.maxOf { it.geodes }
 }
