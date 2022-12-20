@@ -11,15 +11,20 @@ fun main() {
       }
       wrappedList
     }
-    .let {
-      it[1001].second + it[2001].second + it[3001].second
+    .let { list ->
+      val originalZero = list.find { it.second == 0 }!!
+      val newPosition = list.getPosition(originalZero.first)
+      listOf(1000, 2000, 3000)
+        .map { it + newPosition }
+        .map { list[it].second }
     }
+    .sum()
 
   fun part2(input: List<String>) = 0
 
   (object {}).runDay(
     part1 = ::part1,
-    part1Check = 4,
+    part1Check = 3,
     part2 = ::part2,
     part2Check = -1,
   )
@@ -28,7 +33,7 @@ fun main() {
 class WrappedList(private val innerList: MutableList<Pair<Int, Int>>) : MutableList<Pair<Int, Int>> by innerList {
   private val positions: MutableMap<Int, Int> = List(innerList.size) { index -> index to index }.toMap().toMutableMap()
 
-  fun getPosition(originalIndex: Int) = positions[originalIndex]
+  fun getPosition(originalIndex: Int) = positions[originalIndex]!!
   override fun get(index: Int): Pair<Int, Int> = innerList[wrap(index)]
 
   override fun set(index: Int, element: Pair<Int, Int>): Pair<Int, Int> {
