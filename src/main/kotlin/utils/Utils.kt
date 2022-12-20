@@ -84,6 +84,7 @@ fun <T> checkAndRun(
     check(testValue == checkValue) {
         "Expected $checkValue but saw $testValue"
     }
+    println("Check passed")
     println(partFn(input))
 }
 
