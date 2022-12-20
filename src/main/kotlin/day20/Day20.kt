@@ -4,20 +4,8 @@ import runDay
 
 fun main() {
   fun part1(input: List<String>) = WrappedList(input.mapIndexed { index, it -> index to it.toInt() }.toMutableList())
-    .let { wrappedList ->
-      (0 until wrappedList.size).forEach { originalIndex ->
-        val position = wrappedList.getPosition(originalIndex)!!
-        wrappedList.move(position)
-      }
-      wrappedList
-    }
-    .let { list ->
-      val originalZero = list.find { it.second == 0 }!!
-      val newPosition = list.getPosition(originalZero.first)
-      listOf(1000, 2000, 3000)
-        .map { it + newPosition }
-        .map { list[it].second }
-    }
+    .mix()
+    .getPositionsFromOriginalZero(listOf(1000, 2000, 3000))
     .sum()
 
   fun part2(input: List<String>) = 0
@@ -28,6 +16,22 @@ fun main() {
     part2 = ::part2,
     part2Check = -1,
   )
+}
+
+fun WrappedList.mix() = let { wrappedList ->
+  (0 until wrappedList.size).forEach { originalIndex ->
+    val position = wrappedList.getPosition(originalIndex)!!
+    wrappedList.move(position)
+  }
+  wrappedList
+}
+
+fun WrappedList.getPositionsFromOriginalZero(positions: List<Int>) = let { list ->
+  val originalZero = list.find { it.second == 0 }!!
+  val newPosition = list.getPosition(originalZero.first)
+  listOf(1000, 2000, 3000)
+    .map { it + newPosition }
+    .map { list[it].second }
 }
 
 class WrappedList(private val innerList: MutableList<Pair<Int, Int>>) : MutableList<Pair<Int, Int>> by innerList {
