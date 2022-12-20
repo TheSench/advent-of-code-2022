@@ -2,23 +2,16 @@ package day20
 
 import runDay
 
-const val DECRYPTION_KEY = 811589153L
 fun main() {
-  fun part1(input: List<String>) = input.toLongs()
-    .toWrappedList()
-    .mix()
-    .getPositionsFromOriginalZero(listOf(1000, 2000, 3000))
-    .sum()
+  fun part1(input: List<String>) = input.toCoordinates(
+    decryptionKey = 1,
+    mixCount = 1,
+  )
 
-  fun part2(input: List<String>) = input.toLongs()
-    .map { it * DECRYPTION_KEY }
-    .toWrappedList()
-    .let { list ->
-      repeat(10) { list.mix() }
-      list
-    }
-    .getPositionsFromOriginalZero(listOf(1000, 2000, 3000))
-    .sum()
+  fun part2(input: List<String>) = input.toCoordinates(
+    decryptionKey = 811589153,
+    mixCount = 10,
+  )
 
   (object {}).runDay(
     part1 = ::part1,
@@ -27,6 +20,16 @@ fun main() {
     part2Check = 1623178306L,
   )
 }
+
+fun List<String>.toCoordinates(decryptionKey: Int = 1, mixCount: Int = 1) = this.toLongs()
+  .map { it * decryptionKey }
+  .toWrappedList()
+  .let { list ->
+    repeat(mixCount) { list.mix() }
+    list
+  }
+  .getPositionsFromOriginalZero(listOf(1000, 2000, 3000))
+  .sum()
 
 fun List<String>.toLongs() = this.map { it.toLong() }
 
