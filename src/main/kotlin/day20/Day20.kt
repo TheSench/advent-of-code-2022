@@ -2,25 +2,39 @@ package day20
 
 import runDay
 
+const val DECRYPTION_KEY = 811589153L
 fun main() {
-  fun part1(input: List<String>) = WrappedList(input.mapIndexed { index, it -> index to it.toLong() }.toMutableList())
+  fun part1(input: List<String>) = input.toLongs()
+    .toWrappedList()
     .mix()
     .getPositionsFromOriginalZero(listOf(1000, 2000, 3000))
     .sum()
 
-  fun part2(input: List<String>) = 0
+  fun part2(input: List<String>) = input.toLongs()
+    .map { it * DECRYPTION_KEY }
+    .toWrappedList()
+    .let { list ->
+      repeat(10) { list.mix() }
+      list
+    }
+    .getPositionsFromOriginalZero(listOf(1000, 2000, 3000))
+    .sum()
 
   (object {}).runDay(
     part1 = ::part1,
-    part1Check = 3,
+    part1Check = 3L,
     part2 = ::part2,
-    part2Check = -1,
+    part2Check = 1623178306L,
   )
 }
 
+fun List<String>.toLongs() = this.map { it.toLong() }
+
+fun List<Long>.toWrappedList() = WrappedList(this.mapIndexed { index, it -> index to it }.toMutableList())
+
 fun WrappedList.mix() = let { wrappedList ->
   (0 until wrappedList.size).forEach { originalIndex ->
-    val position = wrappedList.getPosition(originalIndex)!!
+    val position = wrappedList.getPosition(originalIndex)
     wrappedList.move(position)
   }
   wrappedList
