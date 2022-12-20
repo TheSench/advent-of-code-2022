@@ -29,7 +29,7 @@ fun WrappedList.mix() = let { wrappedList ->
 fun WrappedList.getPositionsFromOriginalZero(positions: List<Int>) = let { list ->
   val originalZero = list.find { it.second == 0L }!!
   val newPosition = list.getPosition(originalZero.first)
-  listOf(1000, 2000, 3000)
+  positions
     .map { it + newPosition }
     .map { list[it].second }
 }
