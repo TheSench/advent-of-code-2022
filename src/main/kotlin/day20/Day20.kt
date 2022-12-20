@@ -3,7 +3,7 @@ package day20
 import runDay
 
 fun main() {
-  fun part1(input: List<String>) = WrappedList(input.mapIndexed { index, it -> index to it.toInt() }.toMutableList())
+  fun part1(input: List<String>) = WrappedList(input.mapIndexed { index, it -> index to it.toLong() }.toMutableList())
     .mix()
     .getPositionsFromOriginalZero(listOf(1000, 2000, 3000))
     .sum()
@@ -27,20 +27,20 @@ fun WrappedList.mix() = let { wrappedList ->
 }
 
 fun WrappedList.getPositionsFromOriginalZero(positions: List<Int>) = let { list ->
-  val originalZero = list.find { it.second == 0 }!!
+  val originalZero = list.find { it.second == 0L }!!
   val newPosition = list.getPosition(originalZero.first)
   listOf(1000, 2000, 3000)
     .map { it + newPosition }
     .map { list[it].second }
 }
 
-class WrappedList(private val innerList: MutableList<Pair<Int, Int>>) : MutableList<Pair<Int, Int>> by innerList {
+class WrappedList(private val innerList: MutableList<Pair<Int, Long>>) : MutableList<Pair<Int, Long>> by innerList {
   private val positions: MutableMap<Int, Int> = List(innerList.size) { index -> index to index }.toMap().toMutableMap()
 
   fun getPosition(originalIndex: Int) = positions[originalIndex]!!
-  override fun get(index: Int): Pair<Int, Int> = innerList[wrap(index)]
+  override fun get(index: Int): Pair<Int, Long> = innerList[wrap(index)]
 
-  override fun set(index: Int, element: Pair<Int, Int>): Pair<Int, Int> {
+  override fun set(index: Int, element: Pair<Int, Long>): Pair<Int, Long> {
     return innerList.set(wrap(index), element)
   }
 
@@ -62,7 +62,7 @@ class WrappedList(private val innerList: MutableList<Pair<Int, Int>>) : MutableL
     }
   }
 
-  private fun wrapMoveTo(index: Int) = (index % (size - 1)).let {
+  private fun wrapMoveTo(index: Long) = (index % (size - 1)).let {
     if (it >= 0) it else (size - 1) + it
   }
 
@@ -70,9 +70,9 @@ class WrappedList(private val innerList: MutableList<Pair<Int, Int>>) : MutableL
     if (it >= 0) it else size + it
   }
 
-  private fun Int.adjustForBoundaries() = when (this) {
-    0 -> size - 1
-    else -> this
+  private fun Long.adjustForBoundaries() = when (this) {
+    0L -> size - 1
+    else -> this.toInt()
   }
 
   override fun toString() = innerList.map { it.second }.joinToString(", ")
