@@ -5,80 +5,85 @@ import java.lang.RuntimeException
 
 fun main() {
 
-    fun part1(input: List<String>): Int = input.map { it.toMonkey() }
-        .let { monkeys ->
-            val seenMonkeys = mutableMapOf<String, Monkey>()
-            val waitList = mutableMapOf<String, List<Monkey>>()
-
-            fun Monkey.register() {
-                seenMonkeys[name] = this
-            }
-
-            fun Monkey.tryRunOperation() {
-                val otherMonkeys = waitingOn.map { it to seenMonkeys[it]?.number }
-                if (otherMonkeys.any { it.second == null }) {
-                    otherMonkeys.forEach { (other, value) ->
-                        if (value == null) {
-                            val listForMonkey = waitList.computeIfAbsent(other) { emptyList() }
-                            waitList[other] = listForMonkey + this
-                        }
-                    }
-                    return
-                }
-                val numbers = otherMonkeys.map { it.second!! }
-
-                number = when (operation) {
-                    "+" -> numbers[0] + numbers[1]
-                    "-" -> numbers[0] - numbers[1]
-                    "*" -> numbers[0] * numbers[1]
-                    "/" -> numbers[0] - numbers[1]
-                    else -> throw IllegalArgumentException("Operation $operation not supported")
-                }
-
-                removeFromWaitList(waitList)
-            }
-
-            fun Monkey.triggerWaiters() {
-                if (number == null) return
-
-                waitList[name]?.forEach {
-                    it.tryRunOperation()
-                    if (it.number != null) it.triggerWaiters()
-                }
-            }
-
-            fun Monkey.process() {
-                register()
-                if (number == null) tryRunOperation()
-            }
-
-            monkeys.forEach { monkey ->
-                monkey.process()
-                monkey.triggerWaiters()
-                val rootNumber = seenMonkeys["root"]?.number
-                if (rootNumber != null) {
-                    println(seenMonkeys["root"]!!.toEquation(seenMonkeys))
-                    return rootNumber
-                }
-            }
-            throw RuntimeException("Did not find root number")
-        }
+    fun part1(input: List<String>): Long = input.map { it.toMonkey() }
+      .processMonkeys()
+      .let {
+        it["root"]?.number!!
+      }
 
     fun part2(input: List<String>) = 0
 
     (object {}).runDay(
         part1 = ::part1,
-        part1Check = 152,
+        part1Check = 152L,
         part2 = ::part2,
         part2Check = -1,
     )
 }
 
-private fun Monkey.toEquation(allMonkeys: Map<String, Monkey>): String = when (this.operation) {
-    null -> this.number.toString()
+private fun List<Monkey>.processMonkeys(): MutableMap<String, Monkey> = let { monkeys ->
+    val seenMonkeys = mutableMapOf<String, Monkey>()
+    val waitList = mutableMapOf<String, List<Monkey>>()
+
+    fun Monkey.register() {
+        seenMonkeys[name] = this
+    }
+
+    fun Monkey.tryRunOperation() {
+        val otherMonkeys = waitingOn.map { it to seenMonkeys[it]?.number }
+        if (otherMonkeys.any { it.second == null }) {
+            otherMonkeys.forEach { (other, value) ->
+                if (value == null) {
+                    val listForMonkey = waitList.computeIfAbsent(other) { emptyList() }
+                    waitList[other] = listForMonkey + this
+                }
+            }
+            return
+        }
+        val numbers = otherMonkeys.map { it.second!! }
+
+        number = when (operation) {
+            "+" -> numbers[0] + numbers[1]
+            "-" -> numbers[0] - numbers[1]
+            "*" -> numbers[0] * numbers[1]
+            "/" -> numbers[0] / numbers[1]
+            else -> throw IllegalArgumentException("Operation $operation not supported")
+        }
+
+        removeFromWaitList(waitList)
+    }
+
+    fun Monkey.triggerWaiters() {
+        if (number == null) return
+
+        waitList[name]?.forEach {
+            it.tryRunOperation()
+            if (it.number != null) it.triggerWaiters()
+        }
+    }
+
+    fun Monkey.process() {
+        register()
+        if (number == null) tryRunOperation()
+    }
+
+    monkeys.forEach { monkey ->
+        monkey.process()
+        monkey.triggerWaiters()
+        val rootNumber = seenMonkeys["root"]?.number
+        if (rootNumber != null) {
+          return seenMonkeys
+        }
+    }
+    throw RuntimeException("Did not find root number")
+}
+
+private fun Monkey.toEquation(allMonkeys: Map<String, Monkey>, maxDepth: Int = Int.MAX_VALUE, currentDepth: Int = 0): String = when {
+    this.operation == null -> this.number.toString()
+    currentDepth == maxDepth -> this.number.toString()
     else -> {
-        val first = allMonkeys[this.waitingOn[0]]!!.toEquation(allMonkeys)
-        val second = allMonkeys[this.waitingOn[1]]!!.toEquation(allMonkeys)
+        val first = allMonkeys[this.waitingOn[0]]!!.toEquation(allMonkeys, maxDepth, currentDepth + 1)
+        val second = allMonkeys[this.waitingOn[1]]!!.toEquation(allMonkeys, maxDepth, currentDepth + 1)
         "($first $operation $second)"
     }
 }
@@ -93,7 +98,7 @@ private fun Monkey.removeFromWaitList(waitList: MutableMap<String, List<Monkey>>
 
 class Monkey(
     val name: String,
-    var number: Int? = null,
+    var number: Long? = null,
     val operation: String? = null,
     var waitingOn: List<String> = emptyList(),
 )
@@ -111,7 +116,7 @@ fun String.toMonkey() = split(": ").let { nameValue ->
 fun NumberMonkey(name: String, value: String): Monkey {
     return Monkey(
         name = name,
-        number = value.toInt()
+        number = value.toLong()
     )
 }
 
