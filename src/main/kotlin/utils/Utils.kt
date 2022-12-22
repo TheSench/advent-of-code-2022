@@ -1,6 +1,7 @@
 import java.io.InputStream
 import java.math.BigInteger
 import java.security.MessageDigest
+import kotlin.system.measureTimeMillis
 
 fun resource(day: Int, name: String): InputStream? = "$day".padStart(2, '0').let { dir ->
     {}.javaClass.getResourceAsStream("day$dir/$name.txt")
@@ -85,7 +86,12 @@ fun <T> checkAndRun(
         "Expected $checkValue but saw $testValue"
     }
     println("Check passed")
-    println(partFn(input))
+    var result: T
+    val elapsedMillis = measureTimeMillis {
+        result = partFn(input)
+    }
+    println(result)
+    println("Took ${elapsedMillis}ms")
 }
 
 fun <T> checkAndRun(
