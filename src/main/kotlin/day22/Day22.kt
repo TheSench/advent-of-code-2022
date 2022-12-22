@@ -3,11 +3,23 @@ package day22
 import groupByBlanks
 import runDay
 import toPair
-import java.lang.IllegalArgumentException
+import java.awt.Point
 
 fun main() {
 
-    fun part1(input: List<String>) = input.parse()
+    fun part1(input: List<String>) =
+        input.parse()
+            .let { (grid, instructions) ->
+                val initialX = grid[0].indexOf(MapTile.OPEN)
+                val startPosition = Position(Point(initialX, 0), Direction.RIGHT)
+                instructions.fold(startPosition) { position, instruction ->
+                    when (instruction) {
+                        is TurnLeft -> position.turnLeft()
+                        is TurnRight -> position.turnRight()
+                        is Move -> position.move(instruction.spaces, grid)
+                    }
+                }
+            }
 
     fun part2(input: List<String>) = 0
 
@@ -65,3 +77,30 @@ sealed interface Instruction
 object TurnLeft : Instruction
 object TurnRight : Instruction
 data class Move(val spaces: Int) : Instruction
+
+enum class Direction(unitOfMovement: Point) {
+    RIGHT(Point(1, 0)),
+    LEFT(Point(-1, 0)),
+    UP(Point(0, -1)),
+    DOWN(Point(0, 1));
+
+    fun turnRight() = when (this) {
+        RIGHT -> DOWN
+        DOWN -> LEFT
+        LEFT -> UP
+        UP -> RIGHT
+    }
+
+    fun turnLeft() = when (this) {
+        RIGHT -> UP
+        UP -> LEFT
+        LEFT -> DOWN
+        DOWN -> RIGHT
+    }
+}
+
+data class Position(val point: Point, val direction: Direction) {
+    fun turnRight() = copy(direction = direction.turnRight())
+    fun turnLeft() = copy(direction = direction.turnLeft())
+    fun move(spaces: Int, grid: Grid) = copy()
+}
