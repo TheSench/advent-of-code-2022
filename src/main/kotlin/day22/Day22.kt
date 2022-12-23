@@ -291,35 +291,36 @@ class FaceEdge(
 
 )
 
-class PoorMansRingBuffer<T>(vararg values: T) {
+class RingNode<T>(val value: T) {
+    lateinit var previous: RingNode<T>
+    lateinit var next: RingNode<T>
 
-    val head: BufferNode<T>
-
-    init {
-        val nodes = values.map(::BufferNode)
-        head = nodes.first()
-        nodes.reduce() { previous, next ->
-            previous.next = next
-            next.previous = previous
-            next
+    companion object {
+        operator fun <T> invoke(vararg values: T) : RingNode<T> {
+            val nodes = values.map(::RingNode)
+            val head = nodes.first()
+            nodes.reduce() { previous, next ->
+                previous.next = next
+                next.previous = previous
+                next
+            }
+            val last = nodes.last()
+            last.next = head
+            head.previous = last
+            return head
         }
-        val last = nodes.last()
-        last.next = head
-        head.previous = last
     }
 
-    class BufferNode<T>(
-        val value: T
-    ) {
-        lateinit var previous: BufferNode<T>
-        lateinit var next: BufferNode<T>
+    fun find(value: T) {
+
     }
 }
 
-typealias RingBuffer<T> = PoorMansRingBuffer<T>
-typealias FaceSide = Pair<Int, Cube.Edge>
+typealias Ring<T> = RingNode<T>
+data class FaceSide(val region: Int, val edge: Cube.Edge)
+val sides = Ring(Cube.Edge.TOP, Cube.Edge.RIGHT, Cube.Edge.BOTTOM, Cube.Edge.LEFT)
 
-class Box {
+class BoxTemplate {
     enum class Side(vararg edgeList: Edge) {
         A(Edge.AD, Edge.AF, Edge.AB, Edge.AE),
         B(Edge.AB, Edge.BF, Edge.BC, Edge.BE),
@@ -327,20 +328,39 @@ class Box {
         D(Edge.CD, Edge.DF, Edge.AD, Edge.DE),
         E(Edge.AE, Edge.BE, Edge.CE, Edge.DE),
         F(Edge.AF, Edge.DF, Edge.CF, Edge.BF);
-
-        val edges = RingBuffer(edgeList)
     }
 
-    enum class Edge {
-        AB, AD, AE, AF,
-        BC, BE, BF,
-        CD, CE, CF,
-        DE, DF
+    val Side.edges
+        get() = when (this) {
+            Side.A -> Ring(Edge.AD, Edge.AF, Edge.AB, Edge.AE)
+            Side.B -> Ring(Edge.AB, Edge.BF, Edge.BC, Edge.BE)
+            Side.C -> Ring(Edge.BC, Edge.CF, Edge.CD, Edge.CE)
+            Side.D -> Ring(Edge.CD, Edge.DF, Edge.AD, Edge.DE)
+            Side.E -> Ring(Edge.AE, Edge.BE, Edge.CE, Edge.DE)
+            Side.F -> Ring(Edge.AF, Edge.DF, Edge.CF, Edge.BF)
+        }
+
+    enum class Edge(vararg sides: Side) {
+        AB(Side.A, Side.B), AD(Side.A, Side.D), AE(Side.A, Side.E), AF(Side.A, Side.F),
+        BC(Side.B, Side.C), BE(Side.B, Side.E), BF(Side.B, Side.F),
+        CD(Side.C, Side.D), CE(Side.C, Side.E), CF(Side.C, Side.F),
+        DE(Side.D, Side.E), DF(Side.D, Side.F);
+
+        val sides: List<Side> = sides.toList()
+
+        fun otherSide(side: Side) = sides.find { it != side }!!
     }
 
     val sidesToRegions = mutableMapOf<Side, Int>()
     val regionsToSides = mutableMapOf<Int, Side>()
-    val edgesToFaceSides = mutableMapOf<Edge, Pair<FaceSide, FaceSide>>()
+    val edgesToFaceSides = mutableMapOf<Edge, Pair<FaceSide?, FaceSide?>>()
+
+    fun Side.addNeighbor(edge: Edge, newSide: FaceSide) {
+        val otherSide = edge.otherSide(this)
+        sidesToRegions[otherSide] = newSide.region
+        regionsToSides[newSide.region] = otherSide
+//        otherSide.edges
+    }
 }
 
 fun List<String>.toMap(): Grid = map { row ->
