@@ -4,6 +4,7 @@ import groupByBlanks
 import runDay
 import toPair
 import utils.Point
+import java.util.function.Predicate
 
 fun main() {
 
@@ -24,15 +25,28 @@ fun main() {
             }.toScore()
 
     fun part2(input: List<String>) =
-        input.parse().let {
-            it.first.toCube()
-        }
+        input.parse().let { (grid, instructions) ->
+            val cube = grid.toCube()
+            val startPosition = Position(Point(0, 0), Direction.RIGHT)
+            cube.printPosition(startPosition)
+            instructions.fold(startPosition) { position, instruction ->
+                when (instruction) {
+                    is TurnLeft -> position.turnLeft()
+                    is TurnRight -> position.turnRight()
+                    is Move -> position.move(instruction.spaces, cube)
+                }.also {
+                    cube.printPosition(it)
+                }
+            }.let(cube::absoluteLocation).also {
+                println(it)
+            }
+        }.toScore()
 
     (object {}).runDay(
         part1 = ::part1,
         part1Check = 6032,
         part2 = ::part2,
-        part2Check = -1,
+        part2Check = 5031,
     )
 }
 
@@ -66,18 +80,46 @@ fun Grid.print(start: Position, end: Position, positions: List<Position>) = mapI
     }.joinToString("")
 }.joinToString("\n").let { println(it) }
 
-fun Grid.toCube() = this[0].count { it != MapTile.VOID }.let { sideLength ->
+fun Grid.toCube() = this.getSideLength().let { sideLength ->
     Cube(
         sideLength,
-        listOf(
-            this.getFace(Point(sideLength * 2, 0), sideLength),
-            this.getFace(Point(0, sideLength), sideLength),
-            this.getFace(Point(sideLength, sideLength), sideLength),
-            this.getFace(Point(sideLength * 2, sideLength), sideLength),
-            this.getFace(Point(sideLength * 2, sideLength * 2), sideLength),
-            this.getFace(Point(sideLength * 3, sideLength * 2), sideLength)
-        )
+        this.findFaces(sideLength)
     )
+}
+
+fun Grid.getSideLength(): Int {
+    val checkForVoids = this[0][0] == MapTile.VOID
+    val tileCheck = if (this[0][0] == MapTile.VOID) {
+        Predicate<MapTile> { it == MapTile.VOID }
+    } else {
+        Predicate<MapTile> { it != MapTile.VOID }
+    }
+    return kotlin.math.min(
+        this.takeWhile { tileCheck.test(it[0]) }.count(),
+        this[0].takeWhile { tileCheck.test(it) }.count(),
+    )
+}
+
+fun Grid.findFaces(sideLength: Int): List<Face> {
+    val faces = mutableListOf<Pair<Point, Face>>()
+    val start = Point(0, 0)
+    (indices step sideLength).forEach { yOffset ->
+        (this[yOffset].indices step sideLength).forEach { xOffset ->
+            val sideStart = start + Point(xOffset, yOffset)
+            if (sideStart in this && this[sideStart] != MapTile.VOID) {
+                faces.add(
+                    sideStart to Face(
+                        getFace(sideStart, sideLength)
+                    )
+                )
+            }
+        }
+    }
+    return faces
+        .sortedWith(
+            compareBy<Pair<Point, Face>> { (point) -> point.y }
+                .thenBy { (point) -> point.x }
+        ).map { it.second }
 }
 
 fun Grid.getFace(start: Point, sideLength: Int) =
@@ -85,10 +127,10 @@ fun Grid.getFace(start: Point, sideLength: Int) =
         it.subList(start.x, start.x + sideLength)
     }
 
-class Cube(val sideLength: Int, val faces: List<Grid>) {
-    var currentSide = 0
-    val currentFace = faces[currentSide]
-    val end = sideLength - 1
+class Cube(private val sideLength: Int, private val faces: List<Face>) {
+    private var currentSide = 0
+    private var currentFace = faces[currentSide]
+    private val end = sideLength - 1
     fun tryMove(position: Position): Position? {
         val next = position.next()
         val nextPoint = next.point
@@ -100,15 +142,21 @@ class Cube(val sideLength: Int, val faces: List<Grid>) {
         }
     }
 
-    fun wrapAround(position: Position): Position? {
+    private fun wrapAround(position: Position): Position? {
         val nextSide = nextSide(position.direction)
         val sideChange = getSideChange(nextSide)
         val nextPoint = translate(position.point, sideChange)
         val nextFace = faces[nextSide]
         return if (nextFace[nextPoint] != MapTile.WALL) {
-            position.copy(
-                point = nextPoint
-            )
+            val newDirection = when (sideChange.second) {
+                Edge.TOP -> Direction.DOWN
+                Edge.BOTTOM -> Direction.UP
+                Edge.LEFT -> Direction.RIGHT
+                Edge.RIGHT -> Direction.LEFT
+            }
+            currentFace = nextFace
+            currentSide = nextSide
+            Position(nextPoint, newDirection)
         } else {
             null
         }
@@ -208,6 +256,22 @@ class Cube(val sideLength: Int, val faces: List<Grid>) {
         }
     }
 
+    fun absoluteLocation(position: Position) = position.copy(
+        point = position.point + when (currentSide) {
+            0 -> Point(sideLength * 2, 0)
+            1 -> Point(0, sideLength)
+            2 -> Point(sideLength, sideLength)
+            3 -> Point(sideLength * 2, sideLength)
+            4 -> Point(sideLength * 2, sideLength * 2)
+            5 -> Point(sideLength * 3, sideLength * 2)
+            else -> throw IllegalArgumentException()
+        }
+    )
+
+    fun printPosition(position: Position) {
+        println("($currentSide) : $position")
+    }
+
     enum class Edge {
         TOP,
         BOTTOM,
@@ -216,6 +280,68 @@ class Cube(val sideLength: Int, val faces: List<Grid>) {
     }
 }
 
+class Face(
+    val tiles: Grid,
+) {
+    operator fun contains(point: Point) = point in tiles
+    operator fun get(point: Point) = tiles[point]
+}
+
+class FaceEdge(
+
+)
+
+class PoorMansRingBuffer<T>(vararg values: T) {
+
+    val head: BufferNode<T>
+
+    init {
+        val nodes = values.map(::BufferNode)
+        head = nodes.first()
+        nodes.reduce() { previous, next ->
+            previous.next = next
+            next.previous = previous
+            next
+        }
+        val last = nodes.last()
+        last.next = head
+        head.previous = last
+    }
+
+    class BufferNode<T>(
+        val value: T
+    ) {
+        lateinit var previous: BufferNode<T>
+        lateinit var next: BufferNode<T>
+    }
+}
+
+typealias RingBuffer<T> = PoorMansRingBuffer<T>
+typealias FaceSide = Pair<Int, Cube.Edge>
+
+class Box {
+    enum class Side(vararg edgeList: Edge) {
+        A(Edge.AD, Edge.AF, Edge.AB, Edge.AE),
+        B(Edge.AB, Edge.BF, Edge.BC, Edge.BE),
+        C(Edge.BC, Edge.CF, Edge.CD, Edge.CE),
+        D(Edge.CD, Edge.DF, Edge.AD, Edge.DE),
+        E(Edge.AE, Edge.BE, Edge.CE, Edge.DE),
+        F(Edge.AF, Edge.DF, Edge.CF, Edge.BF);
+
+        val edges = RingBuffer(edgeList)
+    }
+
+    enum class Edge {
+        AB, AD, AE, AF,
+        BC, BE, BF,
+        CD, CE, CF,
+        DE, DF
+    }
+
+    val sidesToRegions = mutableMapOf<Side, Int>()
+    val regionsToSides = mutableMapOf<Int, Side>()
+    val edgesToFaceSides = mutableMapOf<Edge, Pair<FaceSide, FaceSide>>()
+}
 
 fun List<String>.toMap(): Grid = map { row ->
     row.map {
@@ -330,11 +456,6 @@ fun Grid.tryMove(position: Position): Position? {
         else -> wrapAround(position)
     }
 }
-
-fun Point.opposite() = copy(
-    x = -x,
-    y = -y,
-)
 
 fun Grid.wrapAround(position: Position): Position? {
     var nextOpposite = position.opposite()
