@@ -149,10 +149,10 @@ class Cube(private val sideLength: Int, private val faces: List<Face>) {
         val nextFace = faces[nextSide]
         return if (nextFace[nextPoint] != MapTile.WALL) {
             val newDirection = when (sideChange.second) {
-                Edge.TOP -> Direction.DOWN
-                Edge.BOTTOM -> Direction.UP
-                Edge.LEFT -> Direction.RIGHT
-                Edge.RIGHT -> Direction.LEFT
+                Direction.UP -> Direction.DOWN
+                Direction.DOWN -> Direction.UP
+                Direction.LEFT -> Direction.RIGHT
+                Direction.RIGHT -> Direction.LEFT
             }
             currentFace = nextFace
             currentSide = nextSide
@@ -197,60 +197,60 @@ class Cube(private val sideLength: Int, private val faces: List<Face>) {
     }
 
     private fun getSideChange(nextSide: Int) = when (currentSide to nextSide) {
-        (0 to 1) -> (Edge.TOP to Edge.TOP)
-        (0 to 3) -> (Edge.BOTTOM to Edge.TOP)
-        (0 to 2) -> (Edge.LEFT to Edge.TOP)
-        (0 to 5) -> (Edge.RIGHT to Edge.RIGHT)
+        (0 to 1) -> (Direction.UP to Direction.UP)
+        (0 to 3) -> (Direction.DOWN to Direction.UP)
+        (0 to 2) -> (Direction.LEFT to Direction.UP)
+        (0 to 5) -> (Direction.RIGHT to Direction.RIGHT)
 
-        (1 to 0) -> (Edge.TOP to Edge.TOP)
-        (1 to 4) -> (Edge.BOTTOM to Edge.BOTTOM)
-        (1 to 5) -> (Edge.LEFT to Edge.BOTTOM)
-        (1 to 2) -> (Edge.RIGHT to Edge.LEFT)
+        (1 to 0) -> (Direction.UP to Direction.UP)
+        (1 to 4) -> (Direction.DOWN to Direction.DOWN)
+        (1 to 5) -> (Direction.LEFT to Direction.DOWN)
+        (1 to 2) -> (Direction.RIGHT to Direction.LEFT)
 
-        (2 to 0) -> (Edge.TOP to Edge.LEFT)
-        (2 to 4) -> (Edge.BOTTOM to Edge.LEFT)
-        (2 to 1) -> (Edge.LEFT to Edge.RIGHT)
-        (2 to 3) -> (Edge.RIGHT to Edge.LEFT)
+        (2 to 0) -> (Direction.UP to Direction.LEFT)
+        (2 to 4) -> (Direction.DOWN to Direction.LEFT)
+        (2 to 1) -> (Direction.LEFT to Direction.RIGHT)
+        (2 to 3) -> (Direction.RIGHT to Direction.LEFT)
 
-        (3 to 0) -> (Edge.TOP to Edge.BOTTOM)
-        (3 to 4) -> (Edge.BOTTOM to Edge.TOP)
-        (3 to 2) -> (Edge.LEFT to Edge.RIGHT)
-        (3 to 5) -> (Edge.RIGHT to Edge.TOP)
+        (3 to 0) -> (Direction.UP to Direction.DOWN)
+        (3 to 4) -> (Direction.DOWN to Direction.UP)
+        (3 to 2) -> (Direction.LEFT to Direction.RIGHT)
+        (3 to 5) -> (Direction.RIGHT to Direction.UP)
 
-        (4 to 3) -> (Edge.TOP to Edge.BOTTOM)
-        (4 to 1) -> (Edge.BOTTOM to Edge.BOTTOM)
-        (4 to 2) -> (Edge.LEFT to Edge.BOTTOM)
-        (4 to 5) -> (Edge.RIGHT to Edge.LEFT)
+        (4 to 3) -> (Direction.UP to Direction.DOWN)
+        (4 to 1) -> (Direction.DOWN to Direction.DOWN)
+        (4 to 2) -> (Direction.LEFT to Direction.DOWN)
+        (4 to 5) -> (Direction.RIGHT to Direction.LEFT)
 
-        (5 to 3) -> (Edge.TOP to Edge.RIGHT)
-        (5 to 1) -> (Edge.BOTTOM to Edge.LEFT)
-        (5 to 4) -> (Edge.LEFT to Edge.RIGHT)
-        (5 to 0) -> (Edge.RIGHT to Edge.RIGHT)
+        (5 to 3) -> (Direction.UP to Direction.RIGHT)
+        (5 to 1) -> (Direction.DOWN to Direction.LEFT)
+        (5 to 4) -> (Direction.LEFT to Direction.RIGHT)
+        (5 to 0) -> (Direction.RIGHT to Direction.RIGHT)
 
         else -> throw IllegalArgumentException("Invalid side combination")
     }
 
-    private fun translate(point: Point, sideChange: Pair<Edge, Edge>) = with(point) {
+    private fun translate(point: Point, sideChange: Pair<Direction, Direction>) = with(point) {
         when (sideChange) {
-            (Edge.TOP to Edge.TOP) -> Point(end - x, 0)
-            (Edge.BOTTOM to Edge.TOP) -> Point(x, 0)
-            (Edge.LEFT to Edge.TOP) -> Point(y, 0)
-            (Edge.RIGHT to Edge.TOP) -> Point(end - y, 0)
+            (Direction.UP to Direction.UP) -> Point(end - x, 0)
+            (Direction.DOWN to Direction.UP) -> Point(x, 0)
+            (Direction.LEFT to Direction.UP) -> Point(y, 0)
+            (Direction.RIGHT to Direction.UP) -> Point(end - y, 0)
 
-            (Edge.TOP to Edge.BOTTOM) -> Point(x, end)
-            (Edge.BOTTOM to Edge.BOTTOM) -> Point(end - x, end)
-            (Edge.LEFT to Edge.BOTTOM) -> Point(end - y, end)
-            (Edge.RIGHT to Edge.BOTTOM) -> Point(y, end)
+            (Direction.UP to Direction.DOWN) -> Point(x, end)
+            (Direction.DOWN to Direction.DOWN) -> Point(end - x, end)
+            (Direction.LEFT to Direction.DOWN) -> Point(end - y, end)
+            (Direction.RIGHT to Direction.DOWN) -> Point(y, end)
 
-            (Edge.TOP to Edge.LEFT) -> Point(0, x)
-            (Edge.BOTTOM to Edge.LEFT) -> Point(0, end - x)
-            (Edge.LEFT to Edge.LEFT) -> Point(0, end - y)
-            (Edge.RIGHT to Edge.LEFT) -> Point(0, y)
+            (Direction.UP to Direction.LEFT) -> Point(0, x)
+            (Direction.DOWN to Direction.LEFT) -> Point(0, end - x)
+            (Direction.LEFT to Direction.LEFT) -> Point(0, end - y)
+            (Direction.RIGHT to Direction.LEFT) -> Point(0, y)
 
-            (Edge.TOP to Edge.RIGHT) -> Point(end, end - x)
-            (Edge.BOTTOM to Edge.RIGHT) -> Point(end, x)
-            (Edge.LEFT to Edge.RIGHT) -> Point(end, y)
-            (Edge.RIGHT to Edge.RIGHT) -> Point(end, end - y)
+            (Direction.UP to Direction.RIGHT) -> Point(end, end - x)
+            (Direction.DOWN to Direction.RIGHT) -> Point(end, x)
+            (Direction.LEFT to Direction.RIGHT) -> Point(end, y)
+            (Direction.RIGHT to Direction.RIGHT) -> Point(end, end - y)
 
             else -> throw IllegalArgumentException("Invalid side combination")
         }
@@ -270,13 +270,6 @@ class Cube(private val sideLength: Int, private val faces: List<Face>) {
 
     fun printPosition(position: Position) {
         println("($currentSide) : $position")
-    }
-
-    enum class Edge {
-        TOP,
-        BOTTOM,
-        LEFT,
-        RIGHT;
     }
 }
 
@@ -317,8 +310,8 @@ class RingNode<T>(val value: T) {
 }
 
 typealias Ring<T> = RingNode<T>
-data class FaceSide(val region: Int, val edge: Cube.Edge)
-val sides = Ring(Cube.Edge.TOP, Cube.Edge.RIGHT, Cube.Edge.BOTTOM, Cube.Edge.LEFT)
+data class FaceSide(val region: Int, val edge: Direction)
+val sides = Ring(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT)
 
 class BoxTemplate {
     enum class Side(vararg edgeList: Edge) {
