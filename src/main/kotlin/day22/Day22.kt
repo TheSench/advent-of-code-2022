@@ -19,9 +19,7 @@ fun main() {
                         is TurnLeft -> position.turnLeft()
                         is TurnRight -> position.turnRight()
                         is Move -> position.move(instruction.spaces, grid)
-                    }/*.also {
-                        println(it)
-                    }*/
+                    }
                 }
             }.toScore()
 
@@ -29,18 +27,13 @@ fun main() {
         input.parse().let { (grid, instructions) ->
             val cube = grid.toCube()
             val startPosition = Position(Point(0, 0), Direction.RIGHT)
-            cube.printPosition(startPosition)
             instructions.fold(startPosition) { position, instruction ->
                 when (instruction) {
                     is TurnLeft -> position.turnLeft()
                     is TurnRight -> position.turnRight()
                     is Move -> position.move(instruction.spaces, cube)
-                }.also {
-                    cube.printPosition(it)
                 }
-            }.let(cube::absoluteLocation).also {
-                println(it)
-            }
+            }.let(cube::absoluteLocation)
         }.toScore()
 
     (object {}).runDay(
@@ -55,32 +48,6 @@ fun List<String>.parse() = groupByBlanks().toPair().let { (mapLines, instruction
     mapLines.toMap() to instructionLines.toInstructions()
 }
 
-fun Grid.print(start: Position, end: Position, positions: List<Position>) = mapIndexed { y, row ->
-    val positionDisplay = positions.associate {
-        it.point to when (it) {
-            start -> 'S'
-            end -> 'E'
-            else -> when (it.direction) {
-                Direction.LEFT -> '<'
-                Direction.RIGHT -> '>'
-                Direction.DOWN -> 'v'
-                Direction.UP -> '^'
-            }
-        }
-    }
-    row.mapIndexed { x, space ->
-        when (space) {
-            MapTile.VOID -> ' '
-            MapTile.WALL -> '#'
-            MapTile.OPEN -> if (positionDisplay.containsKey(Point(x, y))) {
-                positionDisplay[Point(x, y)]
-            } else {
-                '.'
-            }
-        }
-    }.joinToString("")
-}.joinToString("\n").let { println(it) }
-
 fun Grid.toCube() = this.getSideLength().let { sideLength ->
     val faces = this.findFaces(sideLength)
     val box = BoxTemplate.from(faces)
@@ -92,7 +59,6 @@ fun Grid.toCube() = this.getSideLength().let { sideLength ->
 }
 
 fun Grid.getSideLength(): Int {
-    val checkForVoids = this[0][0] == MapTile.VOID
     val tileCheck = if (this[0][0] == MapTile.VOID) {
         Predicate<MapTile> { it == MapTile.VOID }
     } else {
@@ -249,10 +215,6 @@ class Cube(
                 point = position.point + offset
             )
         }
-
-    fun printPosition(position: Position) {
-        println("($currentSide) : $position")
-    }
 }
 
 operator fun Point.times(value: Int) = Point(
@@ -276,7 +238,7 @@ class RingNode<T>(val value: T) {
         operator fun <T> invoke(vararg values: T): RingNode<T> {
             val nodes = values.map(::RingNode)
             val head = nodes.first()
-            nodes.reduce() { previous, next ->
+            nodes.reduce { previous, next ->
                 previous.next = next
                 next.previous = previous
                 next
@@ -324,7 +286,7 @@ data class FaceSide(val region: Int, val edge: Direction)
 val sides = Ring(Direction.UP, Direction.RIGHT, Direction.DOWN, Direction.LEFT)
 
 class BoxTemplate {
-    enum class Side(vararg edgeList: Edge) {
+    enum class Side {
         A, B, C, D, E, F;
     }
 
