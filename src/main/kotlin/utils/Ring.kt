@@ -44,8 +44,9 @@ class RingIterator<T>(private val start: RingNode<T>) : Iterator<T> {
 
     override fun next(): T {
         first = false
-        current = current.next
-        return current.value
+        return current.value.also {
+            current = current.next
+        }
     }
 }
 
