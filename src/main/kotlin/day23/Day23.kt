@@ -43,16 +43,45 @@ fun main() {
                     x = elves.maxOf { it.x },
                     y = elves.maxOf { it.y },
                 )
-                (max.x - min.x) * (max.y - min.y)
+                (max.x - min.x + 1) * (max.y - min.y + 1) - elves.size
             }
 
-    fun part2(input: List<String>) = 0
+    fun part2(input: List<String>) =
+        input.toElves()
+            .let { allElves ->
+                var positions = allElves
+                var movesToTry = possibleMoves
+                repeat(Int.MAX_VALUE) { i ->
+                    val oldPositions = positions
+                    positions = positions.fold(mutableMapOf<Elf, List<Elf>>()) { attempts, elf ->
+                        val next = elf.attemptToMove(positions, movesToTry)
+                        attempts.compute(next) { _, elves ->
+                            when (elves) {
+                                null -> listOf(elf)
+                                else -> elves + elf
+                            }
+                        }
+                        attempts
+                    }.flatMap { (next, originals) ->
+                        when (originals.size) {
+                            1 -> listOf(next)
+                            else -> originals
+                        }
+
+                    }.toSet()
+                    movesToTry = movesToTry.next
+                    if (oldPositions.intersect(positions) == positions) {
+                        return i + 1
+                    }
+                }
+                Int.MAX_VALUE
+            }
 
     (object {}).runDay(
         part1 = ::part1,
         part1Check = 110,
         part2 = ::part2,
-        part2Check = -1,
+        part2Check = 20,
     )
 }
 
