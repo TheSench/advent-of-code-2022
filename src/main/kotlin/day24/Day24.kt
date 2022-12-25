@@ -2,48 +2,58 @@ package day24
 
 import runDay
 import utils.Point
+import java.lang.RuntimeException
 
 fun main() {
 
     fun part1(input: List<String>) = input.parse().let { (bounds, blizzards) ->
-        solve(bounds, blizzards, bounds.start, bounds.end).first
+        solve(bounds, blizzards, listOf(bounds.end))
     }
 
-    fun part2(input: List<String>) = 0
+    fun part2(input: List<String>) = input.parse().let { (bounds, blizzards) ->
+        solve(bounds, blizzards, listOf(bounds.end, bounds.start, bounds.end))
+    }
 
     (object {}).runDay(
         part1 = ::part1,
         part1Check = 18,
         part2 = ::part2,
-        part2Check = -1,
+        part2Check = 54,
     )
 }
 
-fun solve(bounds: Bounds, blizzards: List<Blizzard>, start: Point, goal: Point): Pair<Int, List<Blizzard>> {
-    var positions = listOf(start)
+fun solve(bounds: Bounds, blizzards: List<Blizzard>, goals: List<Point>): Int {
+    val startingStep = Step(bounds.start, 0)
+    var positions = listOf(startingStep)
     var currentBlizzards = blizzards
     val lcm = lcm(bounds.width, bounds.height)
-    val seen = mutableSetOf(0 to start)
+    val seen = mutableSetOf(0 to startingStep)
     repeat(Int.MAX_VALUE) { turn ->
         currentBlizzards = currentBlizzards.move(bounds)
         val blizzardLocations = currentBlizzards.map { it.location }.toSet()
-        positions = positions.flatMap { location ->
-            location.getMoves().filter {
-                it in bounds && location !in blizzardLocations
-            }.filter {
-                (turn % lcm) to it !in seen
-            }.also { moves ->
-                if (moves.any { it == goal }) {
-                    return (turn + 2) to currentBlizzards
-                }
-                moves.forEach {
-                    seen.add((turn % lcm) to it)
+        positions = positions.flatMap { (location, goal) ->
+            var targetGoal = goal
+            if (location == goals[targetGoal]) {
+                targetGoal++
+                if (targetGoal == goals.size) {
+                    return turn + 1
                 }
             }
-        }
+            location.getMoves().filter {
+                it in bounds && location !in blizzardLocations
+            }.map {
+                Step(it, targetGoal)
+            }.filter {
+                (turn % lcm) to it !in seen
+            }.onEach {
+                seen.add((turn % lcm) to it)
+            }
+        }.ifEmpty { throw RuntimeException("Got stuck") }
     }
-    return Int.MAX_VALUE to currentBlizzards
+    return Int.MAX_VALUE
 }
+
+data class Step(val location: Point, val goal: Int)
 
 fun debug(turn: Int, bounds: Bounds, allBlizzards: List<Blizzard>) {
     val blizzardLocations = allBlizzards.groupBy { it.location }
