@@ -6,29 +6,7 @@ import utils.Point
 fun main() {
 
     fun part1(input: List<String>) = input.parse().let { (bounds, blizzards) ->
-        var positions = listOf(bounds.start)
-        var currentBlizzards = blizzards
-        val lcm = lcm(bounds.width, bounds.height)
-        val seen = mutableSetOf(0 to bounds.start)
-        repeat(Int.MAX_VALUE) { turn ->
-            currentBlizzards = currentBlizzards.move(bounds)
-            val blizzardLocations = currentBlizzards.map { it.location }.toSet()
-            positions = positions.flatMap { location ->
-                location.getMoves().filter {
-                    it in bounds && location !in blizzardLocations
-                }.filter {
-                    (turn % lcm) to it !in seen
-                }.also { moves ->
-                    if (moves.any { it == bounds.end }) {
-                        return (turn + 2)
-                    }
-                    moves.forEach {
-                        seen.add((turn % lcm) to it)
-                    }
-                }
-            }
-        }
-        Int.MAX_VALUE
+        solve(bounds, blizzards, bounds.start, bounds.end).first
     }
 
     fun part2(input: List<String>) = 0
@@ -39,6 +17,32 @@ fun main() {
         part2 = ::part2,
         part2Check = -1,
     )
+}
+
+fun solve(bounds: Bounds, blizzards: List<Blizzard>, start: Point, goal: Point): Pair<Int, List<Blizzard>> {
+    var positions = listOf(start)
+    var currentBlizzards = blizzards
+    val lcm = lcm(bounds.width, bounds.height)
+    val seen = mutableSetOf(0 to start)
+    repeat(Int.MAX_VALUE) { turn ->
+        currentBlizzards = currentBlizzards.move(bounds)
+        val blizzardLocations = currentBlizzards.map { it.location }.toSet()
+        positions = positions.flatMap { location ->
+            location.getMoves().filter {
+                it in bounds && location !in blizzardLocations
+            }.filter {
+                (turn % lcm) to it !in seen
+            }.also { moves ->
+                if (moves.any { it == goal }) {
+                    return (turn + 2) to currentBlizzards
+                }
+                moves.forEach {
+                    seen.add((turn % lcm) to it)
+                }
+            }
+        }
+    }
+    return Int.MAX_VALUE to currentBlizzards
 }
 
 fun debug(turn: Int, bounds: Bounds, allBlizzards: List<Blizzard>) {
