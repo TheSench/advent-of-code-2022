@@ -15,3 +15,8 @@ fun main() {
         part2Check = 54,
     )
 }
+
+typealias SNAFU = String
+typealias Base10 = Int
+fun SNAFU.toBase10(): Int = 0
+fun Base10.toSnafu(): String = "0"
