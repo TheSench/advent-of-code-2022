@@ -11,7 +11,6 @@ fun main() {
             .let { allElves ->
                 var positions = allElves
                 var movesToTry = possibleMoves
-                positions.print()
                 repeat(10) { i ->
                     positions = positions.fold(mutableMapOf<Elf, List<Elf>>()) { attempts, elf ->
                         val next = elf.attemptToMove(positions, movesToTry)
@@ -30,8 +29,6 @@ fun main() {
 
                     }.toSet()
                     movesToTry = movesToTry.next
-                    println("== End of Round ${i+1} ==")
-                    positions.print()
                 }
                 positions
             }.let { elves ->
@@ -103,28 +100,6 @@ fun Elf.attemptToMove(allElves: Set<Elf>, possibilities: Ring<MovementAttempt>):
 
 typealias Elf = Point
 
-fun Set<Elf>.print() {
-    val min = Point(
-        x = kotlin.math.min(-3, minOf { it.x }),
-        y = kotlin.math.min(-1, minOf { it.y }),
-    )
-    val max = Point(
-        x = kotlin.math.max(min.x + 13, maxOf { it.x }),
-        y = kotlin.math.max(min.y + 10, maxOf { it.y }),
-    )
-    (min.y..max.y).map { y ->
-        (min.x..max.x).map { x ->
-            if (Point(x, y) in this) {
-                "#"
-            } else {
-                "."
-            }
-        }.joinToString("")
-    }.joinToString("\n").run {
-        println(this)
-        println()
-    }
-}
 data class MovementAttempt(val check: Elf.(Set<Elf>) -> Boolean, val move: Elf.() -> Elf) {
     operator fun invoke(elf: Elf, allElves: Set<Elf>): Elf? = when (elf.check(allElves)) {
         true -> elf.move()
