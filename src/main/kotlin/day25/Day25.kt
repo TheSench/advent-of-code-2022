@@ -18,37 +18,37 @@ fun main() {
 }
 
 typealias SNAFU = String
-typealias Base10 = Int
+typealias Base10 = Long
 
-fun SNAFU.toBase10(): Int = reversed().foldIndexed(0) { index, base10, char ->
+fun SNAFU.toBase10(): Long = reversed().foldIndexed(0L) { index, base10, char ->
     val next = when (char) {
-        '=' -> -2
-        '-' -> -1
-        '0' -> 0
-        '1' -> 1
-        '2' -> 2
+        '=' -> -2L
+        '-' -> -1L
+        '0' -> 0L
+        '1' -> 1L
+        '2' -> 2L
         else -> throw IllegalArgumentException("Invalid char: $char")
     }
 
-    base10 + 5.pow(index) * next
+    base10 + 5L.pow(index) * next
 }
 
-fun Base10.toSnafu(): String = toInt().let { base10 ->
+fun Base10.toSnafu(): String = toLong().let { base10 ->
     val chars = mutableListOf<Char>()
     var remaining = base10
     while (remaining > 0) {
         val digit = remaining % 5
         remaining = (remaining - digit) / 5
         chars.add(when (digit) {
-            0 -> '0'
-            1 -> '1'
-            2 -> '2'
-            3 -> '='.also { remaining += 1 }
-            4 -> '-'.also { remaining += 1 }
+            0L -> '0'
+            1L -> '1'
+            2L -> '2'
+            3L -> '='.also { remaining += 1 }
+            4L -> '-'.also { remaining += 1 }
             else -> throw IllegalArgumentException("Unexpected number")
         })
     }
     chars.reversed().joinToString("")
 }
 
-fun Int.pow(power: Int) = toDouble().pow(power).toInt()
+fun Long.pow(power: Int) = toDouble().pow(power).toLong()

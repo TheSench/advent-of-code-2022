@@ -36,7 +36,7 @@ class Day25Test {
         "2=01,          201",
         "2=0=,          198",
     )
-    fun `SNAFU to base10`(snafu: String, base10: Int) {
+    fun `SNAFU to base10`(snafu: String, base10: Long) {
         snafu.toBase10() shouldBe base10
     }
 
@@ -71,7 +71,7 @@ class Day25Test {
         "1-0---0,       12345",
         "1121-1110-1=0, 314159265",
     )
-    fun `base10 to SNAFU`(snafu: String, base10: Int) {
+    fun `base10 to SNAFU`(snafu: String, base10: Long) {
         base10.toSnafu() shouldBe snafu
     }
 }
